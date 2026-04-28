@@ -2,34 +2,30 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
-import { Link, useRouter } from 'expo-router'; // Tambah useRouter untuk navigasi selepas berjaya
 
-export default function RegisterScreen() {
-  const router = useRouter();
+// 1. TUKAR: Guna { navigation }, buang useRouter
+export default function RegisterScreen({ navigation }) {
   
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState('User');
+  const [role, setRole] = useState('customer'); // Default ikut database awak 'customer' atau 'user'
 
-  // FUNGSI UNTUK HANTAR DATA KE DATABASE
   const handleRegister = async () => {
-    // 1. Semak jika ada kotak yang kosong
     if (!fullName || !phone || !email || !password || !confirmPassword) {
       Alert.alert('Ralat', 'Sila isi semua maklumat!');
       return;
     }
 
-    // 2. Semak jika kata laluan sepadan
     if (password !== confirmPassword) {
       Alert.alert('Ralat', 'Kata laluan tidak sepadan!');
       return;
     }
 
     try {
-      // SILA TUKAR 192.168.X.X KEPADA ALAMAT IPv4 LAPTOP AWAK
+      // Pastikan IP ini tepat dengan IP Hotspot awak
       const API_URL = 'http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/register.php';
 
       const response = await fetch(API_URL, {
@@ -43,21 +39,25 @@ export default function RegisterScreen() {
           phone: phone,
           email: email,
           password: password,
-          role: role
+          role: role.toLowerCase() // Pastikan huruf kecil untuk database
         })
       });
 
-      const json = await response.json();
+      // 2. DEBUG: Baca jawapan XAMPP sebagai teks dahulu
+      const rawText = await response.text();
+      console.log("JAWAPAN DAFTAR DARI XAMPP: ", rawText);
+
+      const json = JSON.parse(rawText);
 
       if (json.status === 'success') {
         Alert.alert('Berjaya!', json.message);
-        // Kembali ke skrin Log Masuk selepas berjaya daftar
-        router.push('/'); 
+        // 3. TUKAR: Kembali ke LoginScreen guna navigate
+        navigation.navigate('LoginScreen'); 
       } else {
         Alert.alert('Gagal', json.message);
       }
     } catch (error) {
-      Alert.alert('Ralat Rangkaian', 'Sila pastikan XAMPP berjalan dan IP adalah betul.');
+      Alert.alert('Ralat Rangkaian', 'Sila semak terminal VS Code untuk punca ralat.');
       console.error(error);
     }
   };
@@ -71,7 +71,6 @@ export default function RegisterScreen() {
       >
         <StatusBar style="dark" />
         
-        {/* === SECTION TOP HEADER (LOGO) === */}
         <View style={styles.topHeader}>
           <View style={styles.headerLogoBox}>
             <MaterialCommunityIcons name="food-fork-drink" size={20} color="black" />
@@ -81,23 +80,18 @@ export default function RegisterScreen() {
 
         <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
           
-          {/* === BACK BUTTON === */}
-          <Link href="/" asChild>
-            <TouchableOpacity style={styles.backButton}>
-              <Ionicons name="chevron-back" size={20} color="#1A1A1A" />
-              <Text style={styles.backButtonText}>BACK</Text>
-            </TouchableOpacity>
-          </Link>
+          {/* 4. TUKAR: Butang Back guna navigation.goBack() */}
+          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <Ionicons name="chevron-back" size={20} color="#1A1A1A" />
+            <Text style={styles.backButtonText}>BACK</Text>
+          </TouchableOpacity>
 
-          {/* === SECTION TITLE === */}
           <View style={styles.titleSection}>
             <Text style={styles.mainTitle}>REGISTER AN ACCOUNT</Text>
             <Text style={styles.subTitle}>Welcome to UKMFoodie!</Text>
           </View>
 
-          {/* === SECTION FORM INPUT === */}
           <View style={styles.formSection}>
-            
             <Text style={styles.inputLabel}>Full Name</Text>
             <View style={styles.inputWrapper}>
               <Ionicons name="person-outline" size={20} color="#888" style={styles.inputIcon} />
@@ -127,34 +121,29 @@ export default function RegisterScreen() {
               <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
               <TextInput style={styles.input} placeholder="min 6 character" placeholderTextColor="#A9A9A9" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} />
             </View>
-
           </View>
 
-          {/* === SECTION ROLE SELECTION === */}
           <Text style={styles.roleLabel}>Please choose your role</Text>
           <View style={styles.roleContainer}>
-            <TouchableOpacity style={[styles.roleButton, role === 'User' && styles.roleButtonActive]} onPress={() => setRole('User')}>
-              <Text style={[styles.roleText, role === 'User' && styles.roleTextActive]}>User</Text>
+            <TouchableOpacity style={[styles.roleButton, role === 'customer' && styles.roleButtonActive]} onPress={() => setRole('customer')}>
+              <Text style={[styles.roleText, role === 'customer' && styles.roleTextActive]}>User</Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={[styles.roleButton, role === 'Seller' && styles.roleButtonActive]} onPress={() => setRole('Seller')}>
-              <Text style={[styles.roleText, role === 'Seller' && styles.roleTextActive]}>Seller</Text>
+            <TouchableOpacity style={[styles.roleButton, role === 'seller' && styles.roleButtonActive]} onPress={() => setRole('seller')}>
+              <Text style={[styles.roleText, role === 'seller' && styles.roleTextActive]}>Seller</Text>
             </TouchableOpacity>
           </View>
 
-          {/* === SECTION BUTTON & LINK === */}
-          {/* PANGGIL FUNGSI handleRegister DI SINI */}
           <TouchableOpacity style={styles.signUpButton} onPress={handleRegister}>
             <Text style={styles.signUpButtonText}>Sign Up</Text>
           </TouchableOpacity>
           
           <View style={styles.loginTextContainer}>
             <Text style={styles.alreadyHaveText}>Already have an account? </Text>
-            <Link href="/" asChild>
-              <TouchableOpacity>
-                <Text style={styles.loginLink}>Login</Text>
-              </TouchableOpacity>
-            </Link>
+            {/* 5. TUKAR: Navigasi ke LoginScreen */}
+            <TouchableOpacity onPress={() => navigation.navigate('LoginScreen')}>
+              <Text style={styles.loginLink}>Login</Text>
+            </TouchableOpacity>
           </View>
 
         </ScrollView>
@@ -163,7 +152,6 @@ export default function RegisterScreen() {
   );
 }
 
-// Stylesheet kekal sama, saya sertakan supaya tak perlu salin tampal banyak kali
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F8F8FA' },
   container: { flex: 1 },

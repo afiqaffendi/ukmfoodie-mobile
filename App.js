@@ -2,26 +2,38 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-// Panggil kedua-dua skrin yang awak dah buat tadi
-// (Pastikan path folder ./screens/ ini betul mengikut susunan folder awak)
+// 1. Import fail RegisterScreen yang awak dah ada
+import LoginScreen from './screens/LoginScreen'; 
 import HomeScreen from './screens/HomeScreen'; 
 import MenuScreen from './screens/MenuScreen';
+import RegisterScreen from './screens/RegisterScreen'; 
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="HomeScreen">
+      <Stack.Navigator initialRouteName="LoginScreen">
         
-        {/* Daftarkan HomeScreen */}
+        <Stack.Screen 
+          name="LoginScreen" 
+          component={LoginScreen} 
+          options={{ headerShown: false }} 
+        />
+
+        {/* 2. Daftar skrin Register di sini */}
+        <Stack.Screen 
+          name="RegisterScreen" 
+          component={RegisterScreen} 
+          options={{ headerShown: false }} 
+        />
+
         <Stack.Screen 
           name="HomeScreen" 
           component={HomeScreen} 
-          options={{ headerShown: false }} // Kita sorokkan header asal (sebab UI awak dah ada header sendiri)
+          options={{ headerShown: false }} 
         />
         
-        {/* Daftarkan MenuScreen */}
         <Stack.Screen 
           name="MenuScreen" 
           component={MenuScreen} 

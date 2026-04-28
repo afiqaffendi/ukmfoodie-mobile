@@ -1,24 +1,20 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
-import { Link, useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons'; 
 
-export default function LoginScreen() {
-  const router = useRouter();
+// 1. TUKAR DI SINI: Kita guna { navigation } seperti skrin lain, bukan useRouter
+export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  // FUNGSI UNTUK LOG MASUK
   const handleLogin = async () => {
-    // Semak jika kotak kosong
     if (!email || !password) {
       Alert.alert('Ralat', 'Sila masukkan e-mel dan kata laluan.');
       return;
     }
 
     try {
-      // SILA TUKAR 192.168.X.X KEPADA ALAMAT IPv4 LAPTOP AWAK
       const API_URL = 'http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/login.php';
 
       const response = await fetch(API_URL, {
@@ -27,24 +23,25 @@ export default function LoginScreen() {
           'Accept': 'application/json',
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          email: email,
-          password: password
-        })
+        body: JSON.stringify({ email, password })
       });
 
-      const json = await response.json();
+      // 2. PERANGKAP DEBUG: Baca sebagai teks biasa dahulu
+      const rawText = await response.text();
+      console.log("JAWAPAN DARI XAMPP: ", rawText); // Lihat terminal VS Code!
+
+      // Cuba tukar teks kepada format JSON
+      const json = JSON.parse(rawText);
 
       if (json.status === 'success') {
-        // Jika berjaya, pergi ke Skrin Utama
         Alert.alert('Berjaya', json.message);
-        router.push('/home'); 
+        // 3. TUKAR DI SINI: Guna navigation.navigate
+        navigation.navigate('HomeScreen'); 
       } else {
-        // Jika salah kata laluan atau e-mel tak wujud
         Alert.alert('Gagal', json.message);
       }
     } catch (error) {
-      Alert.alert('Ralat Rangkaian', 'Sila pastikan XAMPP berjalan dan IP adalah betul.');
+      Alert.alert('Ralat XAMPP', 'Sila semak terminal VS Code untuk melihat punca ralat sebenar.');
       console.error(error);
     }
   };
@@ -60,7 +57,7 @@ export default function LoginScreen() {
         
         <View style={styles.logoSection}>
           <View style={styles.logoYellowBox}>
-            <MaterialCommunityIcons name="food-fork-drink" size={50} color="black" />
+            <Ionicons name="fast-food-outline" size={45} color="black" />
           </View>
           <Text style={styles.appNameText}>UKMFoodie</Text>
         </View>
@@ -85,18 +82,16 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.buttonSection}>
-          {/* PANGGIL FUNGSI handleLogin DI SINI */}
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>Log in</Text>
           </TouchableOpacity>
           
           <View style={styles.registerTextContainer}>
             <Text style={styles.dontHaveText}>Don't have an account? </Text>
-            <Link href="/register" asChild>
-              <TouchableOpacity>
-                <Text style={styles.registerLink}>Register here!</Text>
-              </TouchableOpacity>
-            </Link>
+            {/* 4. TUKAR DI SINI: Guna TouchableOpacity biasa untuk Daftar */}
+            <TouchableOpacity onPress={() => navigation.navigate('RegisterScreen')}>
+              <Text style={styles.registerLink}>Register here!</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -105,7 +100,6 @@ export default function LoginScreen() {
   );
 }
 
-// Stylesheet kekal sama
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F2F2F5' },
   scrollContainer: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 30, paddingTop: 50, paddingBottom: 20 },
