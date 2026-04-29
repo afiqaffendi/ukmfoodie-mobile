@@ -4,20 +4,18 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function MenuScreen({ navigation, route }) {
-  // Terima data gerai dari HomeScreen
   const { stall } = route.params; 
 
   const [menuList, setMenuList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(0.00); 
 
-  // ⚠️ PENTING: Gantikan '10.86.X.X' dengan IP Wi-Fi terkini laptop awak!
-  // Perhatikan penambahan folder 'ukmfoodie_workspace' di dalam laluan URL ini
-  const API_URL = `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/fetch_menu.php?stall_id=${stall.id}`;
+  // IP Address Hotspot awak
+  const IP_ADDRESS = '10.19.95.173';
+  const API_URL = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/fetch_menu.php?stall_id=${stall.id}`;
   
-  // Laluan dinamik untuk gambar gerai
   const headerImage = stall.stall_image && stall.stall_image !== 'default_stall.jpg'
-    ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
+    ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
     : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
 
   useEffect(() => {
@@ -49,7 +47,6 @@ export default function MenuScreen({ navigation, route }) {
       
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         
-        {/* Header Dinamik */}
         <ImageBackground source={{ uri: headerImage }} style={styles.headerImage}>
           <View style={styles.overlay} />
           <SafeAreaView>
@@ -63,7 +60,6 @@ export default function MenuScreen({ navigation, route }) {
           </View>
         </ImageBackground>
 
-        {/* Senarai Menu */}
         <View style={styles.menuContainer}>
           {loading ? (
              <ActivityIndicator size="large" color="#FFC93C" style={{ marginTop: 40 }} />
@@ -74,23 +70,37 @@ export default function MenuScreen({ navigation, route }) {
              </View>
           ) : (
             menuList.map((item) => {
-              // Path gambar makanan
               const foodImage = item.food_image && item.food_image !== 'default_food.jpg'
-                ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
                 : 'https://via.placeholder.com/200x200?text=No+Image';
 
+              // LOGIK AVAILABILITY: Semak jika status bukan 'Available'
+              const isAvailable = item.status === 'Available';
+
               return (
-                <View key={item.id} style={styles.menuCard}>
+                <View key={item.id} style={[styles.menuCard, !isAvailable && { opacity: 0.5 }]}>
                   <Image source={{ uri: foodImage }} style={styles.foodImage} />
                   
                   <View style={styles.foodInfo}>
-                    <Text style={styles.foodName}>{item.name}</Text>
-                    <Text style={styles.foodDesc} numberOfLines={2}>{item.description}</Text>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={styles.foodName}>{item.item_name}</Text>
+                        {!isAvailable && (
+                            <View style={styles.soldOutBadge}>
+                                <Text style={styles.soldOutText}>HABIS</Text>
+                            </View>
+                        )}
+                    </View>
+                    <Text style={styles.foodDesc} numberOfLines={2}>{item.category || 'Tiada deskripsi'}</Text>
                     <Text style={styles.foodPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
                   </View>
 
-                  <TouchableOpacity style={styles.addButton} onPress={() => handleAdd(item.price)}>
-                    <Ionicons name="add" size={20} color="#1A1A1A" />
+                  {/* Button Add (Disabled jika habis) */}
+                  <TouchableOpacity 
+                    style={[styles.addButton, !isAvailable && { backgroundColor: '#E0E0E0' }]} 
+                    onPress={() => handleAdd(item.price)}
+                    disabled={!isAvailable}
+                  >
+                    <Ionicons name={isAvailable ? "add" : "close"} size={20} color={isAvailable ? "#1A1A1A" : "#AAA"} />
                   </TouchableOpacity>
                 </View>
               );
@@ -99,7 +109,6 @@ export default function MenuScreen({ navigation, route }) {
         </View>
       </ScrollView>
 
-      {/* Troli (Bottom Bar) */}
       {totalPrice > 0 && (
         <View style={styles.bottomBar}>
           <View>
@@ -129,10 +138,12 @@ const styles = StyleSheet.create({
   menuCard: { flexDirection: 'row', backgroundColor: '#FFF', borderRadius: 15, padding: 15, marginBottom: 15, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
   foodImage: { width: 70, height: 70, borderRadius: 10, marginRight: 15, backgroundColor: '#EEE' },
   foodInfo: { flex: 1, justifyContent: 'center' },
-  foodName: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 4 },
+  foodName: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A', marginRight: 10 },
   foodDesc: { fontSize: 12, color: '#888', marginBottom: 8, lineHeight: 16 },
   foodPrice: { fontSize: 15, fontWeight: 'bold', color: '#E53935' },
   addButton: { width: 32, height: 32, backgroundColor: '#FFC93C', borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginLeft: 10 },
+  soldOutBadge: { backgroundColor: '#FFEDED', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
+  soldOutText: { fontSize: 10, color: '#D32F2F', fontWeight: 'bold' },
   bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFF', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 25, paddingVertical: 15, paddingBottom: 30, borderTopWidth: 1, borderTopColor: '#EAEBEE', shadowColor: '#000', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 10 },
   totalLabel: { fontSize: 12, color: '#555', fontWeight: '600', marginBottom: 2 },
   totalAmount: { fontSize: 20, fontWeight: 'bold', color: '#E53935' },
