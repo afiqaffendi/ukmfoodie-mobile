@@ -7,6 +7,9 @@ import LoginScreen from './screens/LoginScreen';
 import HomeScreen from './screens/HomeScreen'; 
 import MenuScreen from './screens/MenuScreen';
 import RegisterScreen from './screens/RegisterScreen'; 
+import CartScreen from './screens/CartScreen';
+import CheckoutScreen from './screens/CheckoutScreen';
+import OrderStatusScreen from './screens/OrderStatusScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -39,7 +42,23 @@ export default function App() {
           component={MenuScreen} 
           options={{ headerShown: false }} 
         />
+        <Stack.Screen 
+          name="CartScreen" 
+          component={CartScreen} 
+          options={{ headerShown: false }} 
+        />
 
+        <Stack.Screen 
+          name="CheckoutScreen" 
+          component={CheckoutScreen} 
+          options={{ headerShown: false }} 
+        />
+        
+        <Stack.Screen 
+          name="OrderStatusScreen" 
+          component={OrderStatusScreen} 
+          options={{ headerShown: false }} 
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

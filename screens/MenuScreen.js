@@ -28,7 +28,9 @@ export default function MenuScreen({ navigation, route }) {
       const result = await response.json();
       
       if (result.status === 'success') {
-        setMenuList(result.data);
+        // Tambah field 'quantity: 0' pada setiap item secara automatik
+        const updatedData = result.data.map(item => ({ ...item, quantity: 0 }));
+        setMenuList(updatedData);
       }
     } catch (error) {
       console.error("Gagal menarik senarai menu:", error);
@@ -37,15 +39,34 @@ export default function MenuScreen({ navigation, route }) {
     }
   };
 
-  const handleAdd = (price) => {
-    setTotalPrice(prevTotal => prevTotal + parseFloat(price));
+  // Fungsi untuk Tambah/Kurang Kuantiti
+  const updateQuantity = (id, action) => {
+    let newTotal = 0;
+    const updatedMenu = menuList.map(item => {
+      if (item.id === id) {
+        let newQty = item.quantity;
+        if (action === 'add') newQty += 1;
+        else if (action === 'remove' && newQty > 0) newQty -= 1;
+        
+        return { ...item, quantity: newQty };
+      }
+      return item;
+    });
+
+    // Kira semula Total Price keseluruhan
+    updatedMenu.forEach(item => {
+      newTotal += parseFloat(item.price) * item.quantity;
+    });
+
+    setMenuList(updatedMenu);
+    setTotalPrice(newTotal);
   };
 
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
       
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 120 }}>
         
         <ImageBackground source={{ uri: headerImage }} style={styles.headerImage}>
           <View style={styles.overlay} />
@@ -74,7 +95,6 @@ export default function MenuScreen({ navigation, route }) {
                 ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
                 : 'https://via.placeholder.com/200x200?text=No+Image';
 
-              // LOGIK AVAILABILITY: Semak jika status bukan 'Available'
               const isAvailable = item.status === 'Available';
 
               return (
@@ -90,18 +110,32 @@ export default function MenuScreen({ navigation, route }) {
                             </View>
                         )}
                     </View>
-                    <Text style={styles.foodDesc} numberOfLines={2}>{item.category || 'Tiada deskripsi'}</Text>
+                    <Text style={styles.foodDesc}>{item.category || 'N/A'}</Text>
                     <Text style={styles.foodPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
                   </View>
 
-                  {/* Button Add (Disabled jika habis) */}
-                  <TouchableOpacity 
-                    style={[styles.addButton, !isAvailable && { backgroundColor: '#E0E0E0' }]} 
-                    onPress={() => handleAdd(item.price)}
-                    disabled={!isAvailable}
-                  >
-                    <Ionicons name={isAvailable ? "add" : "close"} size={20} color={isAvailable ? "#1A1A1A" : "#AAA"} />
-                  </TouchableOpacity>
+                  {/* Logik Butang Tambah/Kuantiti */}
+                  <View style={styles.actionSection}>
+                    {item.quantity > 0 ? (
+                      <View style={styles.quantityControls}>
+                        <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')}>
+                          <Ionicons name="remove-circle" size={28} color="#FFC93C" />
+                        </TouchableOpacity>
+                        <Text style={styles.quantityText}>{item.quantity}</Text>
+                        <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')}>
+                          <Ionicons name="add-circle" size={28} color="#FFC93C" />
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <TouchableOpacity 
+                        style={[styles.addButton, !isAvailable && { backgroundColor: '#E0E0E0' }]} 
+                        onPress={() => isAvailable && updateQuantity(item.id, 'add')}
+                        disabled={!isAvailable}
+                      >
+                        <Ionicons name="add" size={20} color={isAvailable ? "#1A1A1A" : "#AAA"} />
+                      </TouchableOpacity>
+                    )}
+                  </View>
                 </View>
               );
             })
@@ -109,6 +143,7 @@ export default function MenuScreen({ navigation, route }) {
         </View>
       </ScrollView>
 
+      {/* Bottom Bar: Pautkan ke CartScreen */}
       {totalPrice > 0 && (
         <View style={styles.bottomBar}>
           <View>
@@ -116,12 +151,17 @@ export default function MenuScreen({ navigation, route }) {
             <Text style={styles.totalAmount}>RM {totalPrice.toFixed(2)}</Text>
           </View>
           
-          <TouchableOpacity style={styles.cartButton} onPress={() => alert('Pergi ke pembayaran!')}>
+          <TouchableOpacity 
+            style={styles.cartButton} 
+            onPress={() => navigation.navigate('CartScreen', { 
+                cartItems: menuList.filter(i => i.quantity > 0),
+                stall: stall 
+            })}
+          >
             <Text style={styles.cartButtonText}>Go to cart</Text>
           </TouchableOpacity>
         </View>
       )}
-
     </View>
   );
 }
@@ -139,12 +179,15 @@ const styles = StyleSheet.create({
   foodImage: { width: 70, height: 70, borderRadius: 10, marginRight: 15, backgroundColor: '#EEE' },
   foodInfo: { flex: 1, justifyContent: 'center' },
   foodName: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A', marginRight: 10 },
-  foodDesc: { fontSize: 12, color: '#888', marginBottom: 8, lineHeight: 16 },
+  foodDesc: { fontSize: 12, color: '#888', marginBottom: 8 },
   foodPrice: { fontSize: 15, fontWeight: 'bold', color: '#E53935' },
-  addButton: { width: 32, height: 32, backgroundColor: '#FFC93C', borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginLeft: 10 },
+  actionSection: { marginLeft: 10 },
+  addButton: { width: 32, height: 32, backgroundColor: '#FFC93C', borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
+  quantityControls: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+  quantityText: { fontSize: 16, fontWeight: 'bold', minWidth: 20, textAlign: 'center' },
   soldOutBadge: { backgroundColor: '#FFEDED', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
   soldOutText: { fontSize: 10, color: '#D32F2F', fontWeight: 'bold' },
-  bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFF', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 25, paddingVertical: 15, paddingBottom: 30, borderTopWidth: 1, borderTopColor: '#EAEBEE', shadowColor: '#000', shadowOffset: { width: 0, height: -3 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 10 },
+  bottomBar: { position: 'absolute', bottom: 0, left: 0, right: 0, backgroundColor: '#FFF', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 25, paddingVertical: 15, paddingBottom: 30, borderTopWidth: 1, borderTopColor: '#EAEBEE', elevation: 10 },
   totalLabel: { fontSize: 12, color: '#555', fontWeight: '600', marginBottom: 2 },
   totalAmount: { fontSize: 20, fontWeight: 'bold', color: '#E53935' },
   cartButton: { backgroundColor: '#FFC93C', paddingHorizontal: 30, paddingVertical: 12, borderRadius: 10 },
