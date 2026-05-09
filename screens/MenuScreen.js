@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, Image, SafeAreaView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, Image, SafeAreaView, ActivityIndicator, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -70,7 +70,7 @@ export default function MenuScreen({ navigation, route }) {
         
         <ImageBackground source={{ uri: headerImage }} style={styles.headerImage}>
           <View style={styles.overlay} />
-          <SafeAreaView>
+          <SafeAreaView style={{ paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 }}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
               <Ionicons name="chevron-back" size={24} color="#FFF" />
             </TouchableOpacity>

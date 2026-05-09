@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image, Alert, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 
@@ -28,7 +28,7 @@ export default function HomeScreen({ navigation }) {
         setStalls(result.data);
       }
     } catch (error) {
-      console.error("Gagal menarik data:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
     }
@@ -98,7 +98,7 @@ export default function HomeScreen({ navigation }) {
         ) : stalls.length === 0 ? (
           <View style={styles.emptyState}>
             <MaterialCommunityIcons name="food-off-outline" size={60} color="#CCC" />
-            <Text style={styles.emptyText}>Tiada gerai tersedia.</Text>
+            <Text style={styles.emptyText}>No stalls available.</Text>
           </View>
         ) : (
           stalls.map((item, index) => {
@@ -115,7 +115,13 @@ export default function HomeScreen({ navigation }) {
                 style={styles.card} 
                 activeOpacity={0.9}
                 // TAMBAHAN: Letak fungsi onPress untuk pergi ke MenuScreen dan bawa data gerai (item)
-                onPress={() => navigation.navigate('MenuScreen', { stall: item })}
+                onPress={() => {
+                  if (isOpen) {
+                    navigation.navigate('MenuScreen', { stall: item });
+                  } else {
+                    Alert.alert('Stall Closed', 'This stall is currently closed. Please check back later.');
+                  }
+                }}
               >
                 
                 {/* PEMBETULAN DI SINI: Gambar Gerai menggunakan uri: imagePath */}
@@ -168,6 +174,7 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F3F4F6', // Latar belakang kelabu sangat lembut
+    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0,
   },
   scrollContainer: {
     paddingHorizontal: 20,

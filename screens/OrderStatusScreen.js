@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Image, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { StatusBar } from 'expo-status-bar';
 
 export default function OrderStatusScreen({ navigation, route }) {
   const { order_id } = route.params;
@@ -56,6 +57,7 @@ export default function OrderStatusScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.navigate('Home')}>
           <Ionicons name="close" size={28} color="#1A1A1A" />
@@ -110,7 +112,7 @@ export default function OrderStatusScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF' },
+  container: { flex: 1, backgroundColor: '#FFF', paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 },
   header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, alignItems: 'center' },
   headerTitle: { fontSize: 18, fontWeight: 'bold' },
   content: { alignItems: 'center', padding: 20 },

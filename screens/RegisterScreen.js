@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, Alert, StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 
@@ -153,7 +153,7 @@ export default function RegisterScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: '#F8F8FA' },
+  safeArea: { flex: 1, backgroundColor: '#F8F8FA', paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 },
   container: { flex: 1 },
   scrollContainer: { flexGrow: 1, paddingHorizontal: 25, paddingBottom: 40 },
   topHeader: { alignItems: 'center', paddingTop: 10, paddingBottom: 15, backgroundColor: '#EEEEF0' },

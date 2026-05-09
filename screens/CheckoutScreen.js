@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert, ActivityIndicator, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
+import { StatusBar } from 'expo-status-bar';
 
 export default function CheckoutScreen({ navigation, route }) {
   const { orderData } = route.params;
@@ -92,6 +93,7 @@ export default function CheckoutScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar style="dark" />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={20} color="#1A1A1A" />
@@ -211,7 +213,7 @@ export default function CheckoutScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#EFF1F5' },
+  container: { flex: 1, backgroundColor: '#EFF1F5', paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 15, paddingVertical: 15, backgroundColor: '#FFF' },
   backBtn: { flexDirection: 'row', alignItems: 'center' },
   backText: { fontSize: 12, fontWeight: '700', marginLeft: 5 },
