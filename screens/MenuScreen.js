@@ -8,7 +8,8 @@ export default function MenuScreen({ navigation, route }) {
 
   const [menuList, setMenuList] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [totalPrice, setTotalPrice] = useState(0.00); 
+  const [totalPrice, setTotalPrice] = useState(0.00);
+  const [activeCategory, setActiveCategory] = useState('All');
 
   // IP Address Hotspot awak
   const IP_ADDRESS = '10.19.95.173';
@@ -81,6 +82,22 @@ export default function MenuScreen({ navigation, route }) {
           </View>
         </ImageBackground>
 
+        <View style={styles.tabsContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.tabsScroll}>
+            {['All', 'Food', 'Beverage', 'Others'].map(cat => (
+              <TouchableOpacity 
+                key={cat} 
+                style={[styles.tabButton, activeCategory === cat && styles.tabButtonActive]}
+                onPress={() => setActiveCategory(cat)}
+              >
+                <Text style={[styles.tabText, activeCategory === cat && styles.tabTextActive]}>
+                  {cat === 'All' ? 'All Items' : cat}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+
         <View style={styles.menuContainer}>
           {loading ? (
              <ActivityIndicator size="large" color="#FFC93C" style={{ marginTop: 40 }} />
@@ -90,52 +107,64 @@ export default function MenuScreen({ navigation, route }) {
                <Text style={styles.emptyText}>Belum ada menu diletakkan.</Text>
              </View>
           ) : (
-            menuList.map((item) => {
-              const foodImage = item.food_image && item.food_image !== 'default_food.jpg'
-                ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
-                : 'https://via.placeholder.com/200x200?text=No+Image';
-
-              const isAvailable = item.status === 'Available';
+            (activeCategory === 'All' ? ['Food', 'Beverage', 'Others'] : [activeCategory]).map(category => {
+              const categoryItems = menuList.filter(item => (item.category || 'Food') === category);
+              if (categoryItems.length === 0) return null;
 
               return (
-                <View key={item.id} style={[styles.menuCard, !isAvailable && { opacity: 0.5 }]}>
-                  <Image source={{ uri: foodImage }} style={styles.foodImage} />
+                <View key={category} style={{ marginBottom: 20 }}>
+                  <Text style={styles.categoryTitle}>
+                    {category}
+                  </Text>
                   
-                  <View style={styles.foodInfo}>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Text style={styles.foodName}>{item.item_name}</Text>
-                        {!isAvailable && (
-                            <View style={styles.soldOutBadge}>
-                                <Text style={styles.soldOutText}>HABIS</Text>
-                            </View>
-                        )}
-                    </View>
-                    <Text style={styles.foodDesc}>{item.category || 'N/A'}</Text>
-                    <Text style={styles.foodPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
-                  </View>
+                  {categoryItems.map((item) => {
+                    const foodImage = item.food_image && item.food_image !== 'default_food.jpg'
+                      ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                      : 'https://via.placeholder.com/200x200?text=No+Image';
 
-                  {/* Logik Butang Tambah/Kuantiti */}
-                  <View style={styles.actionSection}>
-                    {item.quantity > 0 ? (
-                      <View style={styles.quantityControls}>
-                        <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')}>
-                          <Ionicons name="remove-circle" size={28} color="#FFC93C" />
-                        </TouchableOpacity>
-                        <Text style={styles.quantityText}>{item.quantity}</Text>
-                        <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')}>
-                          <Ionicons name="add-circle" size={28} color="#FFC93C" />
-                        </TouchableOpacity>
+                    const isAvailable = item.status === 'Available';
+
+                    return (
+                      <View key={item.id} style={[styles.menuCard, !isAvailable && { opacity: 0.5 }]}>
+                        <Image source={{ uri: foodImage }} style={styles.foodImage} />
+                        
+                        <View style={styles.foodInfo}>
+                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                              <Text style={styles.foodName}>{item.item_name}</Text>
+                              {!isAvailable && (
+                                  <View style={styles.soldOutBadge}>
+                                      <Text style={styles.soldOutText}>HABIS</Text>
+                                  </View>
+                              )}
+                          </View>
+                          <Text style={styles.foodDesc}>{item.category || 'Food'}</Text>
+                          <Text style={styles.foodPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
+                        </View>
+
+                        <View style={styles.actionSection}>
+                          {item.quantity > 0 ? (
+                            <View style={styles.quantityControls}>
+                              <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')}>
+                                <Ionicons name="remove-circle" size={28} color="#FFC93C" />
+                              </TouchableOpacity>
+                              <Text style={styles.quantityText}>{item.quantity}</Text>
+                              <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')}>
+                                <Ionicons name="add-circle" size={28} color="#FFC93C" />
+                              </TouchableOpacity>
+                            </View>
+                          ) : (
+                            <TouchableOpacity 
+                              style={[styles.addButton, !isAvailable && { backgroundColor: '#E0E0E0' }]} 
+                              onPress={() => isAvailable && updateQuantity(item.id, 'add')}
+                              disabled={!isAvailable}
+                            >
+                              <Ionicons name="add" size={20} color={isAvailable ? "#1A1A1A" : "#AAA"} />
+                            </TouchableOpacity>
+                          )}
+                        </View>
                       </View>
-                    ) : (
-                      <TouchableOpacity 
-                        style={[styles.addButton, !isAvailable && { backgroundColor: '#E0E0E0' }]} 
-                        onPress={() => isAvailable && updateQuantity(item.id, 'add')}
-                        disabled={!isAvailable}
-                      >
-                        <Ionicons name="add" size={20} color={isAvailable ? "#1A1A1A" : "#AAA"} />
-                      </TouchableOpacity>
-                    )}
-                  </View>
+                    );
+                  })}
                 </View>
               );
             })
@@ -175,6 +204,7 @@ const styles = StyleSheet.create({
   stallTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFF', marginBottom: 5 },
   stallLocation: { fontSize: 14, color: '#EAEBEE', fontWeight: '500' },
   menuContainer: { paddingHorizontal: 20, paddingTop: 20 },
+  categoryTitle: { fontSize: 20, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 15, marginLeft: 5 },
   menuCard: { flexDirection: 'row', backgroundColor: '#FFF', borderRadius: 15, padding: 15, marginBottom: 15, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
   foodImage: { width: 70, height: 70, borderRadius: 10, marginRight: 15, backgroundColor: '#EEE' },
   foodInfo: { flex: 1, justifyContent: 'center' },
@@ -193,5 +223,11 @@ const styles = StyleSheet.create({
   cartButton: { backgroundColor: '#FFC93C', paddingHorizontal: 30, paddingVertical: 12, borderRadius: 10 },
   cartButtonText: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A' },
   emptyState: { alignItems: 'center', marginTop: 50 },
-  emptyText: { marginTop: 10, color: '#888', fontSize: 14 }
+  emptyText: { marginTop: 10, color: '#888', fontSize: 14 },
+  tabsContainer: { backgroundColor: '#FFF', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#EAEBEE' },
+  tabsScroll: { paddingHorizontal: 20, gap: 10 },
+  tabButton: { paddingHorizontal: 20, paddingVertical: 8, borderRadius: 20, backgroundColor: '#F3F4F6', borderWidth: 1, borderColor: '#EAEBEE' },
+  tabButtonActive: { backgroundColor: '#FFC93C', borderColor: '#FFC93C' },
+  tabText: { fontSize: 14, fontWeight: '600', color: '#666' },
+  tabTextActive: { color: '#1A1A1A' }
 });

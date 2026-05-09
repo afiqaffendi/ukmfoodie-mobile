@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons'; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 1. TUKAR DI SINI: Kita guna { navigation } seperti skrin lain, bukan useRouter
 export default function LoginScreen({ navigation }) {
@@ -34,9 +35,12 @@ export default function LoginScreen({ navigation }) {
       const json = JSON.parse(rawText);
 
       if (json.status === 'success') {
+        // Simpan data user ke AsyncStorage
+        await AsyncStorage.setItem('userData', JSON.stringify(json.data));
+        
         Alert.alert('Berjaya', json.message);
         // 3. TUKAR DI SINI: Guna navigation.navigate
-        navigation.navigate('HomeScreen'); 
+        navigation.navigate('MainTabs'); 
       } else {
         Alert.alert('Gagal', json.message);
       }

@@ -3,12 +3,8 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAr
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 
-// Kategori seperti dalam gambar
-const categories = ['Nasi', 'Mi', 'Minuman', 'Kuih', 'Roti'];
-
 // TAMBAHAN: Masukkan { navigation } di sini supaya kita boleh bertukar skrin
 export default function HomeScreen({ navigation }) {
-  const [activeCategory, setActiveCategory] = useState('Nasi');
   const [stalls, setStalls] = useState([]); 
   const [loading, setLoading] = useState(true);
 
@@ -46,7 +42,10 @@ export default function HomeScreen({ navigation }) {
           </View>
           <Text style={styles.logoText}>UKMFoodie</Text>
         </View>
-        <TouchableOpacity style={styles.profileBox}>
+        <TouchableOpacity 
+          style={styles.profileBox}
+          onPress={() => navigation.navigate('CustomerProfileScreen')}
+        >
           <Ionicons name="person-outline" size={18} color="#1A1A1A" />
           <View style={styles.onlineDot} />
         </TouchableOpacity>
@@ -64,34 +63,8 @@ export default function HomeScreen({ navigation }) {
           />
         </View>
 
-        {/* === CATEGORIES === */}
-        <Text style={styles.sectionTitle}>Category</Text>
-        <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false} 
-          contentContainerStyle={styles.categoriesList}
-        >
-          {categories.map(category => (
-            <TouchableOpacity 
-              key={category} 
-              style={[
-                styles.categoryPill, 
-                activeCategory === category && styles.categoryPillActive
-              ]}
-              onPress={() => setActiveCategory(category)}
-            >
-              <Text style={[
-                styles.categoryText, 
-                activeCategory === category && styles.categoryTextActive
-              ]}>
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
 
         {/* === LATEST STALLS LIST === */}
-        <Text style={styles.sectionTitle}>Latest Stalls</Text>
 
         {loading ? (
           <ActivityIndicator size="large" color="#FFC93C" style={{ marginTop: 40 }} />
@@ -251,36 +224,7 @@ const styles = StyleSheet.create({
     color: '#1A1A1A',
   },
 
-  // Categories
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1A1A1A',
-    marginBottom: 12,
-  },
-  categoriesList: {
-    marginBottom: 25,
-    paddingBottom: 5,
-  },
-  categoryPill: {
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    borderRadius: 20,
-    marginRight: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  categoryPillActive: {
-    backgroundColor: '#FFC93C', 
-  },
-  categoryText: {
-    fontSize: 14,
-    color: '#888',
-    fontWeight: '600',
-  },
-  categoryTextActive: {
-    color: '#FFFFFF',
-  },
+
 
   // Cards
   card: {
