@@ -14,6 +14,7 @@ import CheckoutScreen from './screens/CheckoutScreen';
 import OrderStatusScreen from './screens/OrderStatusScreen';
 import CustomerOrderScreen from './screens/CustomerOrderScreen';
 import CustomerProfileScreen from './screens/CustomerProfileScreen';
+import ChatScreen from './screens/ChatScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -106,6 +107,11 @@ export default function App() {
         <Stack.Screen 
           name="CustomerProfileScreen" 
           component={CustomerProfileScreen} 
+          options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="ChatScreen" 
+          component={ChatScreen} 
           options={{ headerShown: false }} 
         />
       </Stack.Navigator>

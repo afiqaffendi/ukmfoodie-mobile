@@ -126,10 +126,6 @@ export default function OrderStatusScreen({ navigation, route }) {
           </View>
           <Text style={styles.headerTitle}>UKMFoodie</Text>
         </View>
-        <Image 
-          source={{uri: 'https://randomuser.me/api/portraits/women/44.jpg'}} 
-          style={styles.profileImg} 
-        />
       </View>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -183,9 +179,16 @@ export default function OrderStatusScreen({ navigation, route }) {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Floating Chat Button */}
-      <TouchableOpacity style={styles.chatButton}>
+      <TouchableOpacity 
+        style={styles.chatButton}
+        onPress={() => navigation.navigate('ChatScreen', { order_id: order_id, stall_id: order?.stall_id })}
+      >
         <Ionicons name="chatbubble-ellipses-outline" size={24} color="#000" />
+        {order?.unread_chats > 0 && (
+          <View style={styles.chatBadge}>
+            <Text style={styles.chatBadgeText}>{order.unread_chats}</Text>
+          </View>
+        )}
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -221,13 +224,6 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     fontWeight: 'bold',
     color: '#1A1A1A'
-  },
-  profileImg: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#fff'
   },
   content: { 
     padding: 20 
@@ -361,6 +357,29 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     elevation: 5
+  },
+  chatBadge: {
+    position: 'absolute',
+    top: 2,
+    right: 2,
+    backgroundColor: '#F1416C',
+    borderRadius: 11,
+    minWidth: 22,
+    height: 22,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#FFF',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 2,
+  },
+  chatBadgeText: {
+    color: '#FFF',
+    fontSize: 10,
+    fontWeight: 'bold',
   },
   center: { 
     flex: 1, 

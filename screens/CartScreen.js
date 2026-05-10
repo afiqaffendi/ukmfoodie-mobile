@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, SafeAreaView, Alert, Platform, StatusBar as RNStatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, SafeAreaView, Alert, Platform, StatusBar as RNStatusBar, KeyboardAvoidingView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 
@@ -69,77 +69,83 @@ export default function CartScreen({ navigation, route }) {
         <View style={{ width: 24 }} /> 
       </View>
 
-      <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <Text style={styles.stallName}>Ordering from: {stall.stall_name}</Text>
-        <Text style={styles.sectionTitle}>Order Items</Text>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView style={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <Text style={styles.stallName}>Ordering from: {stall.stall_name}</Text>
+          <Text style={styles.sectionTitle}>Order Items</Text>
 
-        <View style={styles.cartItemsContainer}>
-          {items.map((item, index) => (
-            <View key={item.id.toString()} style={[styles.cartItemRow, index !== items.length - 1 && styles.itemDivider]}>
-              <Image 
-                 source={{ uri: `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
-                 style={styles.itemImage} 
-              />
-              <View style={styles.itemDetails}>
-                <Text style={styles.itemName}>{item.item_name}</Text>
-                <Text style={styles.itemPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
-                
-                <View style={styles.quantityControls}>
-                  <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')} style={styles.qtyBtn}>
-                    <Ionicons name="remove" size={16} color="#1A1A1A" />
-                  </TouchableOpacity>
-                  <Text style={styles.quantityText}>{item.quantity}</Text>
-                  <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')} style={styles.qtyBtn}>
-                    <Ionicons name="add" size={16} color="#1A1A1A" />
-                  </TouchableOpacity>
+          <View style={styles.cartItemsContainer}>
+            {items.map((item, index) => (
+              <View key={item.id.toString()} style={[styles.cartItemRow, index !== items.length - 1 && styles.itemDivider]}>
+                <Image 
+                   source={{ uri: `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
+                   style={styles.itemImage} 
+                />
+                <View style={styles.itemDetails}>
+                  <Text style={styles.itemName}>{item.item_name}</Text>
+                  <Text style={styles.itemPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
+                  
+                  <View style={styles.quantityControls}>
+                    <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')} style={styles.qtyBtn}>
+                      <Ionicons name="remove" size={16} color="#1A1A1A" />
+                    </TouchableOpacity>
+                    <Text style={styles.quantityText}>{item.quantity}</Text>
+                    <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')} style={styles.qtyBtn}>
+                      <Ionicons name="add" size={16} color="#1A1A1A" />
+                    </TouchableOpacity>
+                  </View>
                 </View>
+
+                <TouchableOpacity 
+                  onPress={() => removeItem(item.id)} 
+                  style={styles.deleteBtn}
+                >
+                  <Ionicons name="trash-outline" size={22} color="#F1416C" />
+                </TouchableOpacity>
               </View>
-
-              <TouchableOpacity 
-                onPress={() => removeItem(item.id)} 
-                style={styles.deleteBtn}
-              >
-                <Ionicons name="trash-outline" size={22} color="#F1416C" />
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-
-        <View style={styles.noteSection}>
-          <Text style={styles.noteLabel}>Special Requests</Text>
-          <View style={styles.noteContainer}>
-            <Ionicons name="document-text-outline" size={20} color="#888" style={{marginRight: 10}} />
-            <TextInput
-              style={styles.noteInput}
-              placeholder="Add a note to seller..."
-              value={note}
-              onChangeText={setNote}
-              multiline
-            />
+            ))}
           </View>
-        </View>
-        <View style={{ height: 150 }} />
-      </ScrollView>
 
-      <View style={styles.footer}>
-        <View style={styles.totalRow}>
-          <Text style={styles.subtotalLabel}>Subtotal</Text>
-          <Text style={styles.subtotalAmount}>RM {calculateTotal()}</Text>
+          <View style={styles.noteSection}>
+            <Text style={styles.noteLabel}>Special Requests</Text>
+            <View style={styles.noteContainer}>
+              <Ionicons name="document-text-outline" size={20} color="#888" style={{marginRight: 10}} />
+              <TextInput
+                style={styles.noteInput}
+                placeholder="Add a note to seller..."
+                value={note}
+                onChangeText={setNote}
+                multiline
+              />
+            </View>
+          </View>
+          <View style={{ height: 40 }} />
+        </ScrollView>
+
+        <View style={styles.footer}>
+          <View style={styles.totalRow}>
+            <Text style={styles.subtotalLabel}>Subtotal</Text>
+            <Text style={styles.subtotalAmount}>RM {calculateTotal()}</Text>
+          </View>
+          <TouchableOpacity 
+            style={styles.checkoutBtn} 
+            onPress={() => navigation.navigate('CheckoutScreen', {
+              orderData: {
+                stall_id: stall.id,
+                items: items,
+                total_amount: calculateTotal(),
+                customer_note: note
+              }
+            })}
+          >
+            <Text style={styles.checkoutText}>Proceed To Checkout</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity 
-          style={styles.checkoutBtn} 
-          onPress={() => navigation.navigate('CheckoutScreen', {
-            orderData: {
-              stall_id: stall.id,
-              items: items,
-              total_amount: calculateTotal(),
-              customer_note: note
-            }
-          })}
-        >
-          <Text style={styles.checkoutText}>Proceed To Checkout</Text>
-        </TouchableOpacity>
-      </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -166,7 +172,7 @@ const styles = StyleSheet.create({
   noteLabel: { fontSize: 15, fontWeight: '600', marginBottom: 12 },
   noteContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF', borderRadius: 12, padding: 12, borderStyle: 'dashed', borderWidth: 1, borderColor: '#CCC' },
   noteInput: { flex: 1, fontSize: 14, minHeight: 40 },
-  footer: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 25, backgroundColor: '#FFF', borderTopLeftRadius: 30, borderTopRightRadius: 30, elevation: 20 },
+  footer: { padding: 25, backgroundColor: '#FFF', borderTopLeftRadius: 30, borderTopRightRadius: 30, elevation: 20, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   subtotalLabel: { fontSize: 16, color: '#F1416C', fontWeight: '500' },
   subtotalAmount: { fontSize: 16, fontWeight: 'bold', color: '#F1416C' },
