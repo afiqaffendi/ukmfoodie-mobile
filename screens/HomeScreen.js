@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image, Alert, Platform, StatusBar as RNStatusBar } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image, Alert, Platform, StatusBar as RNStatusBar, Linking } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
 
@@ -28,6 +28,23 @@ export default function HomeScreen({ navigation }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleGoToMap = (latitude, longitude, stallName) => {
+    if (!latitude || !longitude) {
+      Alert.alert("Lokasi tidak ditemui", "Gerai ini belum menetapkan lokasi tepat.");
+      return;
+    }
+    
+    const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+    const latLng = `${latitude},${longitude}`;
+    const label = encodeURIComponent(stallName);
+    const url = Platform.select({
+      ios: `${scheme}${label}@${latLng}`,
+      android: `${scheme}${latLng}(${label})`
+    });
+
+    Linking.openURL(url);
   };
 
   return (
@@ -126,7 +143,10 @@ export default function HomeScreen({ navigation }) {
                       <Text style={styles.locationText}>Kolej Pendeta Za'ba</Text>
                     </View>
                     
-                    <TouchableOpacity style={styles.goButton}>
+                    <TouchableOpacity 
+                      style={styles.goButton}
+                      onPress={() => handleGoToMap(item.latitude, item.longitude, item.stall_name)}
+                    >
                       <MaterialCommunityIcons name="map-marker-path" size={14} color="#1A1A1A" />
                       <Text style={styles.goText}>Go</Text>
                     </TouchableOpacity>

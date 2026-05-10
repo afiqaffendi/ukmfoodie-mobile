@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert, ActivityIndicator, Platform, StatusBar as RNStatusBar } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert, ActivityIndicator, Platform, StatusBar as RNStatusBar, Modal, Dimensions } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { StatusBar } from 'expo-status-bar';
@@ -15,6 +15,11 @@ export default function CheckoutScreen({ navigation, route }) {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetchingBank, setFetchingBank] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const qrUrl = bankDetails?.qr_path && bankDetails.qr_path !== 'default_qr.png'
+    ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${bankDetails.qr_path}`
+    : 'https://via.placeholder.com/150?text=No+QR+Code';
 
   const serviceTax = 1.00;
   const finalTotal = (parseFloat(orderData.total_amount) + serviceTax).toFixed(2);
@@ -40,8 +45,7 @@ export default function CheckoutScreen({ navigation, route }) {
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
+      allowsEditing: false,
       quality: 0.5,
     });
 
@@ -173,17 +177,29 @@ export default function CheckoutScreen({ navigation, route }) {
 
           {/* QR Code Section - Menarik dari data Seller */}
           <View style={styles.qrContainer}>
-            <Image 
-              source={{ 
-                uri: bankDetails?.qr_path && bankDetails.qr_path !== 'default_qr.png'
-                  ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${bankDetails.qr_path}`
-                  : 'https://via.placeholder.com/150?text=No+QR+Code' 
-              }} 
-              style={styles.qrImage} 
-              resizeMode="contain"
-            />
-            <Text style={{ fontSize: 10, color: '#888', marginTop: 5 }}>Scan to Pay</Text>
+            <TouchableOpacity onPress={() => setIsModalVisible(true)}>
+              <Image 
+                source={{ uri: qrUrl }} 
+                style={styles.qrImage} 
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+            <Text style={{ fontSize: 10, color: '#888', marginTop: 5 }}>Scan to Pay (Click to zoom)</Text>
           </View>
+
+          {/* Full Screen Image Modal */}
+          <Modal visible={isModalVisible} transparent={true} animationType="fade">
+            <View style={styles.modalOverlay}>
+              <TouchableOpacity style={styles.closeModal} onPress={() => setIsModalVisible(false)}>
+                <Ionicons name="close-circle" size={40} color="#FFF" />
+              </TouchableOpacity>
+              <Image 
+                source={{ uri: qrUrl }} 
+                style={styles.fullImage} 
+                resizeMode="contain" 
+              />
+            </View>
+          </Modal>
 
           {/* Upload Area */}
           <TouchableOpacity style={styles.uploadArea} onPress={pickImage}>
@@ -252,5 +268,21 @@ const styles = StyleSheet.create({
   receiptPreview: { width: '100%', height: '100%' },
   footer: { position: 'absolute', bottom: 0, width: '100%', padding: 20 },
   submitBtn: { backgroundColor: '#FFC93C', padding: 18, borderRadius: 12, alignItems: 'center', elevation: 5 },
-  submitBtnText: { fontSize: 15, fontWeight: '800', color: '#1A1A1A' }
+  submitBtnText: { fontSize: 15, fontWeight: '800', color: '#1A1A1A' },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  closeModal: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+  },
+  fullImage: {
+    width: Dimensions.get('window').width * 0.9,
+    height: Dimensions.get('window').height * 0.7,
+  },
 });
