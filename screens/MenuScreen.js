@@ -117,54 +117,64 @@ export default function MenuScreen({ navigation, route }) {
                     {category}
                   </Text>
                   
-                  {categoryItems.map((item) => {
-                    const foodImage = item.food_image && item.food_image !== 'default_food.jpg'
-                      ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
-                      : 'https://via.placeholder.com/200x200?text=No+Image';
+                  <View style={styles.categoryCard}>
+                    {categoryItems.map((item, index) => {
+                      const foodImage = item.food_image && item.food_image !== 'default_food.jpg'
+                        ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                        : 'https://via.placeholder.com/200x200?text=No+Image';
 
-                    const isAvailable = item.status === 'Available';
+                      const isAvailable = item.status === 'Available';
+                      const isLast = index === categoryItems.length - 1;
 
-                    return (
-                      <View key={item.id} style={[styles.menuCard, !isAvailable && { opacity: 0.5 }]}>
-                        <Image source={{ uri: foodImage }} style={styles.foodImage} />
-                        
-                        <View style={styles.foodInfo}>
-                          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                              <Text style={styles.foodName}>{item.item_name}</Text>
-                              {!isAvailable && (
-                                  <View style={styles.soldOutBadge}>
-                                      <Text style={styles.soldOutText}>HABIS</Text>
-                                  </View>
-                              )}
-                          </View>
-                          <Text style={styles.foodDesc}>{item.category || 'Food'}</Text>
-                          <Text style={styles.foodPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
-                        </View>
-
-                        <View style={styles.actionSection}>
-                          {item.quantity > 0 ? (
-                            <View style={styles.quantityControls}>
-                              <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')}>
-                                <Ionicons name="remove-circle" size={28} color="#FFC93C" />
-                              </TouchableOpacity>
-                              <Text style={styles.quantityText}>{item.quantity}</Text>
-                              <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')}>
-                                <Ionicons name="add-circle" size={28} color="#FFC93C" />
-                              </TouchableOpacity>
+                      return (
+                        <View 
+                          key={item.id} 
+                          style={[
+                            styles.menuItemRow, 
+                            !isAvailable && { opacity: 0.5 },
+                            !isLast && styles.itemDivider
+                          ]}
+                        >
+                          <Image source={{ uri: foodImage }} style={styles.foodImage} />
+                          
+                          <View style={styles.foodInfo}>
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={styles.foodName}>{item.item_name}</Text>
+                                {!isAvailable && (
+                                    <View style={styles.soldOutBadge}>
+                                        <Text style={styles.soldOutText}>HABIS</Text>
+                                    </View>
+                                )}
                             </View>
-                          ) : (
-                            <TouchableOpacity 
-                              style={[styles.addButton, !isAvailable && { backgroundColor: '#E0E0E0' }]} 
-                              onPress={() => isAvailable && updateQuantity(item.id, 'add')}
-                              disabled={!isAvailable}
-                            >
-                              <Ionicons name="add" size={20} color={isAvailable ? "#1A1A1A" : "#AAA"} />
-                            </TouchableOpacity>
-                          )}
+                            <Text style={styles.foodDesc}>{item.category || 'Food'}</Text>
+                            <Text style={styles.foodPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
+                          </View>
+
+                          <View style={styles.actionSection}>
+                            {item.quantity > 0 ? (
+                              <View style={styles.quantityControls}>
+                                <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')}>
+                                  <Ionicons name="remove-circle" size={28} color="#FFC93C" />
+                                </TouchableOpacity>
+                                <Text style={styles.quantityText}>{item.quantity}</Text>
+                                <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')}>
+                                  <Ionicons name="add-circle" size={28} color="#FFC93C" />
+                                </TouchableOpacity>
+                              </View>
+                            ) : (
+                              <TouchableOpacity 
+                                style={[styles.addButton, !isAvailable && { backgroundColor: '#E0E0E0' }]} 
+                                onPress={() => isAvailable && updateQuantity(item.id, 'add')}
+                                disabled={!isAvailable}
+                              >
+                                <Ionicons name="add" size={20} color={isAvailable ? "#1A1A1A" : "#AAA"} />
+                              </TouchableOpacity>
+                            )}
+                          </View>
                         </View>
-                      </View>
-                    );
-                  })}
+                      );
+                    })}
+                  </View>
                 </View>
               );
             })
@@ -205,7 +215,9 @@ const styles = StyleSheet.create({
   stallLocation: { fontSize: 14, color: '#EAEBEE', fontWeight: '500' },
   menuContainer: { paddingHorizontal: 20, paddingTop: 20 },
   categoryTitle: { fontSize: 20, fontWeight: 'bold', color: '#1A1A1A', marginBottom: 15, marginLeft: 5 },
-  menuCard: { flexDirection: 'row', backgroundColor: '#FFF', borderRadius: 15, padding: 15, marginBottom: 15, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 5, elevation: 2 },
+  categoryCard: { backgroundColor: '#FFF', borderRadius: 15, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginBottom: 25 },
+  menuItemRow: { flexDirection: 'row', padding: 15, alignItems: 'center' },
+  itemDivider: { borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   foodImage: { width: 70, height: 70, borderRadius: 10, marginRight: 15, backgroundColor: '#EEE' },
   foodInfo: { flex: 1, justifyContent: 'center' },
   foodName: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A', marginRight: 10 },

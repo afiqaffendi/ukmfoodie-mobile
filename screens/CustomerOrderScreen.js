@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, To
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CustomerOrderScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('Active');
@@ -11,11 +12,16 @@ export default function CustomerOrderScreen({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
 
   const IP_ADDRESS = '10.19.95.173';
-  const CUSTOMER_NAME = 'Afiq (Student)'; // Hardcoded currently
-  const API_URL = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/fetch_customer_orders.php?customer_name=${encodeURIComponent(CUSTOMER_NAME)}`;
+  const [userData, setUserData] = useState(null);
 
   const fetchOrders = async () => {
     try {
+      const data = await AsyncStorage.getItem('userData');
+      if (!data) return;
+      const user = JSON.parse(data);
+      setUserData(user);
+
+      const API_URL = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/fetch_customer_orders.php?user_id=${user.id}`;
       const response = await fetch(API_URL);
       const result = await response.json();
       if (result.status === 'success') {

@@ -73,36 +73,37 @@ export default function CartScreen({ navigation, route }) {
         <Text style={styles.stallName}>Ordering from: {stall.stall_name}</Text>
         <Text style={styles.sectionTitle}>Order Items</Text>
 
-        {items.map((item) => (
-          <View key={item.id.toString()} style={styles.cartItem}>
-            <Image 
-               source={{ uri: `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
-               style={styles.itemImage} 
-            />
-            <View style={styles.itemDetails}>
-              <Text style={styles.itemName}>{item.item_name}</Text>
-              <Text style={styles.itemPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
-              
-              <View style={styles.quantityControls}>
-                <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')} style={styles.qtyBtn}>
-                  <Ionicons name="remove" size={16} color="#1A1A1A" />
-                </TouchableOpacity>
-                <Text style={styles.quantityText}>{item.quantity}</Text>
-                <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')} style={styles.qtyBtn}>
-                  <Ionicons name="add" size={16} color="#1A1A1A" />
-                </TouchableOpacity>
+        <View style={styles.cartItemsContainer}>
+          {items.map((item, index) => (
+            <View key={item.id.toString()} style={[styles.cartItemRow, index !== items.length - 1 && styles.itemDivider]}>
+              <Image 
+                 source={{ uri: `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
+                 style={styles.itemImage} 
+              />
+              <View style={styles.itemDetails}>
+                <Text style={styles.itemName}>{item.item_name}</Text>
+                <Text style={styles.itemPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
+                
+                <View style={styles.quantityControls}>
+                  <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')} style={styles.qtyBtn}>
+                    <Ionicons name="remove" size={16} color="#1A1A1A" />
+                  </TouchableOpacity>
+                  <Text style={styles.quantityText}>{item.quantity}</Text>
+                  <TouchableOpacity onPress={() => updateQuantity(item.id, 'add')} style={styles.qtyBtn}>
+                    <Ionicons name="add" size={16} color="#1A1A1A" />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
 
-            {/* BUTANG TONG SAMPAH */}
-            <TouchableOpacity 
-              onPress={() => removeItem(item.id)} 
-              style={styles.deleteBtn}
-            >
-              <Ionicons name="trash-outline" size={22} color="#F1416C" />
-            </TouchableOpacity>
-          </View>
-        ))}
+              <TouchableOpacity 
+                onPress={() => removeItem(item.id)} 
+                style={styles.deleteBtn}
+              >
+                <Ionicons name="trash-outline" size={22} color="#F1416C" />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
 
         <View style={styles.noteSection}>
           <Text style={styles.noteLabel}>Special Requests</Text>
@@ -150,7 +151,9 @@ const styles = StyleSheet.create({
   scrollContent: { padding: 20 },
   stallName: { fontSize: 14, color: '#666', marginBottom: 20 },
   sectionTitle: { fontSize: 16, fontWeight: '700', marginBottom: 15 },
-  cartItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 15, backgroundColor: '#FFF', padding: 15, borderRadius: 15, elevation: 2 },
+  cartItemsContainer: { backgroundColor: '#FFF', borderRadius: 15, overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 3, marginBottom: 25 },
+  cartItemRow: { flexDirection: 'row', alignItems: 'center', padding: 15 },
+  itemDivider: { borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   itemImage: { width: 70, height: 70, borderRadius: 12 },
   itemDetails: { flex: 1, marginLeft: 15 },
   itemName: { fontSize: 15, fontWeight: '600', color: '#1A1A1A' },

@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaVi
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CheckoutScreen({ navigation, route }) {
   const { orderData } = route.params;
@@ -16,6 +17,7 @@ export default function CheckoutScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
   const [fetchingBank, setFetchingBank] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [userData, setUserData] = useState(null);
 
   const qrUrl = bankDetails?.qr_path && bankDetails.qr_path !== 'default_qr.png'
     ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${bankDetails.qr_path}`
@@ -26,7 +28,17 @@ export default function CheckoutScreen({ navigation, route }) {
 
   useEffect(() => {
     fetchStallBankDetails();
+    loadUserData();
   }, []);
+
+  const loadUserData = async () => {
+    try {
+      const data = await AsyncStorage.getItem('userData');
+      if (data) setUserData(JSON.parse(data));
+    } catch (e) {
+      console.error("Failed to load user data");
+    }
+  };
 
   const fetchStallBankDetails = async () => {
     try {
@@ -62,8 +74,9 @@ export default function CheckoutScreen({ navigation, route }) {
 
     setLoading(true);
     const formData = new FormData();
+    formData.append('user_id', userData?.id || "");
     formData.append('stall_id', orderData.stall_id);
-    formData.append('customer_name', "Afiq (Student)"); 
+    formData.append('customer_name', userData?.fullname || "Unknown Customer"); 
     formData.append('total_amount', finalTotal);
     formData.append('customer_note', orderData.customer_note || "");
     formData.append('collect_time', "ASAP"); 

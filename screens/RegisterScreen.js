@@ -11,7 +11,7 @@ export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [role, setRole] = useState('customer'); // Default ikut database awak 'customer' atau 'user'
+  const role = 'customer'; // Default role for app users
 
   const handleRegister = async () => {
     if (!fullName || !phone || !email || !password || !confirmPassword) {
@@ -123,16 +123,7 @@ export default function RegisterScreen({ navigation }) {
             </View>
           </View>
 
-          <Text style={styles.roleLabel}>Please choose your role</Text>
-          <View style={styles.roleContainer}>
-            <TouchableOpacity style={[styles.roleButton, role === 'customer' && styles.roleButtonActive]} onPress={() => setRole('customer')}>
-              <Text style={[styles.roleText, role === 'customer' && styles.roleTextActive]}>User</Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={[styles.roleButton, role === 'seller' && styles.roleButtonActive]} onPress={() => setRole('seller')}>
-              <Text style={[styles.roleText, role === 'seller' && styles.roleTextActive]}>Seller</Text>
-            </TouchableOpacity>
-          </View>
+
 
           <TouchableOpacity style={styles.signUpButton} onPress={handleRegister}>
             <Text style={styles.signUpButtonText}>Sign Up</Text>
