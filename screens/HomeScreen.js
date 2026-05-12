@@ -141,9 +141,20 @@ export default function HomeScreen({ navigation }) {
                       style={styles.goButton}
                       onPress={() => handleGoToMap(item.latitude, item.longitude, item.stall_name)}
                     >
-                      <MaterialCommunityIcons name="map-marker-path" size={14} color="#1A1A1A" />
+                      <MaterialCommunityIcons name="map-marker-path" size={18} color="#1A1A1A" />
                       <Text style={styles.goText}>Go</Text>
                     </TouchableOpacity>
+                  </View>
+
+                  {/* TAMBAHAN: Paparan Rating (Sekarang di bawah lokasi) */}
+                  <View style={styles.ratingRow}>
+                    <Ionicons name="star" size={16} color="#FFC93C" />
+                    <Text style={styles.ratingText}>
+                      {parseFloat(item.avg_rating || 0).toFixed(1)} 
+                    </Text>
+                    <Text style={styles.reviewCountText}>
+                      ({item.total_reviews || 0} reviews)
+                    </Text>
                   </View>
 
                 </View>
@@ -174,7 +185,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     paddingHorizontal: 20,
     paddingTop: 10,
-    paddingBottom: 30,
+    paddingBottom: 100,
   },
 
   // Header
@@ -290,14 +301,20 @@ const styles = StyleSheet.create({
   textClosed: {
     color: '#F1416C',
   },
-  ratingDistanceRow: {
+  ratingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    marginTop: 10,
   },
-  infoText: {
-    fontSize: 13,
-    color: '#555',
+  ratingText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginLeft: 5,
+  },
+  reviewCountText: {
+    fontSize: 12,
+    color: '#888',
     marginLeft: 4,
   },
   locationGoRow: {
@@ -310,7 +327,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   locationText: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#555',
     marginLeft: 4,
   },
@@ -318,15 +335,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E5E7EB',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 10,
   },
   goText: {
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: 'bold',
     color: '#1A1A1A',
-    marginLeft: 4,
+    marginLeft: 6,
   },
 
   emptyState: {

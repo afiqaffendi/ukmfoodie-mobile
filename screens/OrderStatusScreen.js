@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform, StatusBar as RNStatusBar } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform, StatusBar as RNStatusBar, Alert, TextInput } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 
@@ -12,6 +12,8 @@ export default function OrderStatusScreen({ navigation, route }) {
   const [loading, setLoading] = useState(true);
   const [timeLeftStr, setTimeLeftStr] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     fetchOrderStatus();
@@ -65,6 +67,40 @@ export default function OrderStatusScreen({ navigation, route }) {
       console.error("Error fetching status:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const submitReview = async () => {
+    if (rating === 0) {
+      Alert.alert("Error", "Please select a star rating.");
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      const response = await fetch(`${API_BASE}/submit_review.php`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stall_id: order.stall_id,
+          customer_id: order.user_id,
+          order_id: order_id,
+          rating: rating,
+          comment: "" // Can add comment field if needed
+        })
+      });
+      const result = await response.json();
+      if (result.status === 'success') {
+        Alert.alert("Success", "Thank you for your review!");
+        fetchOrderStatus(); // Refresh to hide the rating box
+      } else {
+        Alert.alert("Error", result.message);
+      }
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      Alert.alert("Error", "Failed to submit review.");
+    } finally {
+      setSubmittingReview(false);
     }
   };
 
@@ -177,6 +213,65 @@ export default function OrderStatusScreen({ navigation, route }) {
             </View>
           )}
         </TouchableOpacity>
+
+        {/* TAMBAHAN: Butang Selesai untuk Customer - SEKARANG DI BAWAH ORDER DETAILS */}
+        {order?.status === 'Ready' && (
+          <TouchableOpacity 
+            style={[styles.completeOrderBtn, { marginTop: 20 }]} 
+            onPress={async () => {
+              try {
+                const response = await fetch(`${API_BASE}/update_order_status.php`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ order_id: order_id, status: 'Completed' })
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                  Alert.alert("Success", "Order marked as completed!");
+                  fetchOrderStatus();
+                }
+              } catch (error) {
+                console.error("Error completing order:", error);
+              }
+            }}
+          >
+            <Ionicons name="checkmark-done-circle" size={20} color="#FFF" />
+            <Text style={styles.completeOrderBtnText}>I have received my food</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* TAMBAHAN: Ruangan Review */}
+        {(order?.status === 'Completed' || order?.status === 'Ready') && parseInt(order.is_reviewed) === 0 && (
+          <View style={styles.reviewCard}>
+            <Text style={styles.reviewTitle}>Rate your experience</Text>
+            <Text style={styles.reviewSubtitle}>How was the food and service?</Text>
+            
+            <View style={styles.starsRow}>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <TouchableOpacity key={star} onPress={() => setRating(star)}>
+                  <Ionicons 
+                    name={star <= rating ? "star" : "star-outline"} 
+                    size={35} 
+                    color="#FFC93C" 
+                    style={{ marginHorizontal: 5 }}
+                  />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <TouchableOpacity 
+              style={[styles.submitBtn, submittingReview && { opacity: 0.7 }]} 
+              onPress={submitReview}
+              disabled={submittingReview}
+            >
+              {submittingReview ? (
+                <ActivityIndicator color="#1A1A1A" size="small" />
+              ) : (
+                <Text style={styles.submitBtnText}>Submit Review</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        )}
       </ScrollView>
 
       <TouchableOpacity 
@@ -226,7 +321,8 @@ const styles = StyleSheet.create({
     color: '#1A1A1A'
   },
   content: { 
-    padding: 20 
+    padding: 20,
+    paddingBottom: 120 
   },
   card: {
     backgroundColor: '#FFF',
@@ -385,5 +481,60 @@ const styles = StyleSheet.create({
     flex: 1, 
     justifyContent: 'center', 
     alignItems: 'center' 
+  },
+  completeOrderBtn: {
+    backgroundColor: '#50CD89',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  completeOrderBtnText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
+  },
+  reviewCard: {
+    backgroundColor: '#FFF',
+    borderRadius: 15,
+    padding: 20,
+    marginTop: 30,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
+  },
+  reviewTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
+    marginBottom: 5,
+  },
+  reviewSubtitle: {
+    fontSize: 14,
+    color: '#888',
+    marginBottom: 20,
+  },
+  starsRow: {
+    flexDirection: 'row',
+    marginBottom: 25,
+  },
+  submitBtn: {
+    backgroundColor: '#FFC93C',
+    paddingHorizontal: 40,
+    paddingVertical: 12,
+    borderRadius: 25,
+    width: '100%',
+    alignItems: 'center',
+  },
+  submitBtnText: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#1A1A1A',
   }
 });
