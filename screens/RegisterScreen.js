@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, Alert, StatusBar as RNStatusBar } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // 1. TUKAR: Guna { navigation }, buang useRouter
 export default function RegisterScreen({ navigation }) {
-  
+
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
@@ -52,7 +52,7 @@ export default function RegisterScreen({ navigation }) {
       if (json.status === 'success') {
         Alert.alert('Berjaya!', json.message);
         // 3. TUKAR: Kembali ke LoginScreen guna navigate
-        navigation.navigate('LoginScreen'); 
+        navigation.navigate('LoginScreen');
       } else {
         Alert.alert('Gagal', json.message);
       }
@@ -64,13 +64,13 @@ export default function RegisterScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
         <StatusBar style="dark" />
-        
+
         <View style={styles.topHeader}>
           <View style={styles.headerLogoBox}>
             <MaterialCommunityIcons name="food-fork-drink" size={20} color="black" />
@@ -79,7 +79,7 @@ export default function RegisterScreen({ navigation }) {
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-          
+
           {/* 4. TUKAR: Butang Back guna navigation.goBack() */}
           <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
             <Ionicons name="chevron-back" size={20} color="#1A1A1A" />
@@ -128,7 +128,7 @@ export default function RegisterScreen({ navigation }) {
           <TouchableOpacity style={styles.signUpButton} onPress={handleRegister}>
             <Text style={styles.signUpButtonText}>Sign Up</Text>
           </TouchableOpacity>
-          
+
           <View style={styles.loginTextContainer}>
             <Text style={styles.alreadyHaveText}>Already have an account? </Text>
             {/* 5. TUKAR: Navigasi ke LoginScreen */}

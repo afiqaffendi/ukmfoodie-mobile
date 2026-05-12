@@ -156,9 +156,9 @@ export default function CustomerProfileScreen({ navigation }) {
           <Text style={styles.label}>Full Name</Text>
           <View style={styles.inputWrapper}>
             <Ionicons name="person-outline" size={20} color="#888" style={styles.inputIcon} />
-            <TextInput 
-              style={styles.input} 
-              value={fullname} 
+            <TextInput
+              style={styles.input}
+              value={fullname}
               onChangeText={setFullname}
               placeholder="Your Name"
             />
@@ -167,9 +167,9 @@ export default function CustomerProfileScreen({ navigation }) {
           <Text style={styles.label}>Phone Number</Text>
           <View style={styles.inputWrapper}>
             <Ionicons name="call-outline" size={20} color="#888" style={styles.inputIcon} />
-            <TextInput 
-              style={styles.input} 
-              value={phone} 
+            <TextInput
+              style={styles.input}
+              value={phone}
               onChangeText={setPhone}
               placeholder="01X-XXXXXXX"
               keyboardType="phone-pad"
@@ -177,8 +177,8 @@ export default function CustomerProfileScreen({ navigation }) {
           </View>
         </View>
 
-        <TouchableOpacity 
-          style={[styles.updateBtn, updating && { opacity: 0.7 }]} 
+        <TouchableOpacity
+          style={[styles.updateBtn, updating && { opacity: 0.7 }]}
           onPress={handleUpdate}
           disabled={updating}
         >

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image, Alert, Platform, StatusBar as RNStatusBar, Linking } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // TAMBAHAN: Masukkan { navigation } di sini supaya kita boleh bertukar skrin
 export default function HomeScreen({ navigation }) {
-  const [stalls, setStalls] = useState([]); 
+  const [stalls, setStalls] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // ⚠️ PENTING: Gantikan dengan IP Address laptop awak
@@ -19,7 +19,7 @@ export default function HomeScreen({ navigation }) {
     try {
       const response = await fetch(API_URL);
       const result = await response.json();
-      
+
       if (result.status === 'success') {
         setStalls(result.data);
       }
@@ -35,7 +35,7 @@ export default function HomeScreen({ navigation }) {
       Alert.alert("Lokasi tidak ditemui", "Gerai ini belum menetapkan lokasi tepat.");
       return;
     }
-    
+
     const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
     const latLng = `${latitude},${longitude}`;
     const label = encodeURIComponent(stallName);
@@ -50,7 +50,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
-      
+
       {/* === HEADER === */}
       <View style={styles.headerContainer}>
         <View style={styles.logoRow}>
@@ -59,7 +59,7 @@ export default function HomeScreen({ navigation }) {
           </View>
           <Text style={styles.logoText}>UKMFoodie</Text>
         </View>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.profileBox}
           onPress={() => navigation.navigate('CustomerProfileScreen')}
         >
@@ -69,13 +69,13 @@ export default function HomeScreen({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        
+
         {/* === SEARCH BAR === */}
         <View style={styles.searchContainer}>
           <Ionicons name="search-outline" size={20} color="#888" style={styles.searchIcon} />
-          <TextInput 
-            style={styles.searchInput} 
-            placeholder="Find stalls,foods or location" 
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Find stalls,foods or location"
             placeholderTextColor="#888"
           />
         </View>
@@ -93,16 +93,16 @@ export default function HomeScreen({ navigation }) {
         ) : (
           stalls.map((item, index) => {
             const isOpen = item.status === 'Buka';
-            
+
             // Kod dinamik untuk path gambar
             const imagePath = item.stall_image && item.stall_image !== 'default_stall.jpg'
-             ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.stall_image}`
-             : 'https://via.placeholder.com/600x400?text=No+Image'; // Gambar backup jika tiada
+              ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.stall_image}`
+              : 'https://via.placeholder.com/600x400?text=No+Image'; // Gambar backup jika tiada
 
             return (
-              <TouchableOpacity 
-                key={item.id} 
-                style={styles.card} 
+              <TouchableOpacity
+                key={item.id}
+                style={styles.card}
                 activeOpacity={0.9}
                 // TAMBAHAN: Letak fungsi onPress untuk pergi ke MenuScreen dan bawa data gerai (item)
                 onPress={() => {
@@ -113,13 +113,13 @@ export default function HomeScreen({ navigation }) {
                   }
                 }}
               >
-                
+
                 {/* PEMBETULAN DI SINI: Gambar Gerai menggunakan uri: imagePath */}
                 <Image source={{ uri: imagePath }} style={styles.cardImage} />
-                
+
                 {/* Info Gerai */}
                 <View style={styles.cardContent}>
-                  
+
                   <View style={styles.cardHeaderRow}>
                     <Text style={styles.stallName}>{item.stall_name}</Text>
                     <View style={styles.statusBadge}>
@@ -129,21 +129,15 @@ export default function HomeScreen({ navigation }) {
                     </View>
                   </View>
 
-                  <View style={styles.ratingDistanceRow}>
-                    <Ionicons name="star" size={14} color="#FFC93C" />
-                    <Text style={styles.infoText}>4.5</Text>
-                    
-                    <Ionicons name="footsteps-outline" size={14} color="#888" style={{marginLeft: 15}} />
-                    <Text style={styles.infoText}>0.5 km away</Text>
-                  </View>
-
                   <View style={styles.locationGoRow}>
                     <View style={styles.locationBox}>
                       <Ionicons name="location-outline" size={14} color="#F1416C" />
-                      <Text style={styles.locationText}>Kolej Pendeta Za'ba</Text>
+                      <Text style={styles.locationText} numberOfLines={1}>
+                        {item.location_area || 'Lokasi tidak ditetapkan'}
+                      </Text>
                     </View>
-                    
-                    <TouchableOpacity 
+
+                    <TouchableOpacity
                       style={styles.goButton}
                       onPress={() => handleGoToMap(item.latitude, item.longitude, item.stall_name)}
                     >
@@ -159,6 +153,14 @@ export default function HomeScreen({ navigation }) {
         )}
 
       </ScrollView>
+
+      {/* Floating AI Button */}
+      <TouchableOpacity
+        style={styles.aiFloatingBtn}
+        onPress={() => navigation.navigate('AIChatScreen')}
+      >
+        <MaterialCommunityIcons name="robot" size={30} color="#1A1A1A" />
+      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -174,7 +176,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     paddingBottom: 30,
   },
-  
+
   // Header
   headerContainer: {
     flexDirection: 'row',
@@ -243,8 +245,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#1A1A1A',
   },
-
-
 
   // Cards
   card: {
@@ -336,5 +336,21 @@ const styles = StyleSheet.create({
   emptyText: {
     marginTop: 10,
     color: '#888',
-  }
+  },
+  aiFloatingBtn: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#FFC93C',
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+  },
 });

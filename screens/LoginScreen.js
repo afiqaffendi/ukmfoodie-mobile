@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // 1. TUKAR DI SINI: Kita guna { navigation } seperti skrin lain, bukan useRouter
@@ -37,10 +37,10 @@ export default function LoginScreen({ navigation }) {
       if (json.status === 'success') {
         // Simpan data user ke AsyncStorage
         await AsyncStorage.setItem('userData', JSON.stringify(json.data));
-        
+
         Alert.alert('Berjaya', json.message);
         // 3. TUKAR DI SINI: Guna navigation.navigate
-        navigation.navigate('MainTabs'); 
+        navigation.navigate('MainTabs');
       } else {
         Alert.alert('Gagal', json.message);
       }
@@ -51,14 +51,14 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
     >
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-        
+
         <View style={styles.logoSection}>
           <View style={styles.logoYellowBox}>
             <Ionicons name="fast-food-outline" size={45} color="black" />
@@ -89,7 +89,7 @@ export default function LoginScreen({ navigation }) {
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <Text style={styles.loginButtonText}>Log in</Text>
           </TouchableOpacity>
-          
+
           <View style={styles.registerTextContainer}>
             <Text style={styles.dontHaveText}>Don't have an account? </Text>
             {/* 4. TUKAR DI SINI: Guna TouchableOpacity biasa untuk Daftar */}

@@ -125,27 +125,27 @@ export default function CartScreen({ navigation, route }) {
           </View>
           <View style={{ height: 40 }} />
         </ScrollView>
-
-        <View style={styles.footer}>
-          <View style={styles.totalRow}>
-            <Text style={styles.subtotalLabel}>Subtotal</Text>
-            <Text style={styles.subtotalAmount}>RM {calculateTotal()}</Text>
-          </View>
-          <TouchableOpacity 
-            style={styles.checkoutBtn} 
-            onPress={() => navigation.navigate('CheckoutScreen', {
-              orderData: {
-                stall_id: stall.id,
-                items: items,
-                total_amount: calculateTotal(),
-                customer_note: note
-              }
-            })}
-          >
-            <Text style={styles.checkoutText}>Proceed To Checkout</Text>
-          </TouchableOpacity>
-        </View>
       </KeyboardAvoidingView>
+
+      <View style={styles.footer}>
+        <View style={styles.totalRow}>
+          <Text style={styles.subtotalLabel}>Subtotal</Text>
+          <Text style={styles.subtotalAmount}>RM {calculateTotal()}</Text>
+        </View>
+        <TouchableOpacity 
+          style={styles.checkoutBtn} 
+          onPress={() => navigation.navigate('CheckoutScreen', {
+            orderData: {
+              stall_id: stall.id,
+              items: items,
+              total_amount: calculateTotal(),
+              customer_note: note
+            }
+          })}
+        >
+          <Text style={styles.checkoutText}>Proceed To Checkout</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
