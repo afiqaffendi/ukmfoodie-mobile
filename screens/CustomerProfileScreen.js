@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert, ActivityIndicator, Platform, StatusBar as RNStatusBar } from 'react-native';
+import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useAlert } from '../components/CustomAlert';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'expo-status-bar';
@@ -13,6 +14,7 @@ export default function CustomerProfileScreen({ navigation }) {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const { showAlert } = useAlert();
 
   const IP_ADDRESS = '10.19.95.173';
   const API_BASE = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
@@ -49,11 +51,11 @@ export default function CustomerProfileScreen({ navigation }) {
           setImage(`${API_BASE}/uploads/${data.profile_picture}`);
         }
       } else {
-        Alert.alert("Gagal", result.message || "Gagal menarik data profil.");
+        showAlert("Failed", result.message || "Failed to fetch profile data.", "error");
       }
     } catch (error) {
       console.error("Fetch Profile Error:", error);
-      Alert.alert("Ralat Rangkaian", "Sila pastikan telefon anda berada dalam rangkaian WiFi yang sama dengan laptop/server XAMPP (IP: " + IP_ADDRESS + ")");
+      showAlert("Network Error", "Please ensure your phone is on the same WiFi as the server (IP: " + IP_ADDRESS + ")", "error");
     } finally {
       setLoading(false);
     }
@@ -73,7 +75,7 @@ export default function CustomerProfileScreen({ navigation }) {
 
   const handleUpdate = async () => {
     if (!fullname || !phone) {
-      Alert.alert("Ralat", "Sila isi nama dan nombor telefon.");
+      showAlert("Error", "Please fill in your name and phone number.", "warning");
       return;
     }
 
@@ -99,21 +101,35 @@ export default function CustomerProfileScreen({ navigation }) {
 
       const result = await response.json();
       if (result.status === 'success') {
-        Alert.alert("Berjaya", "Profil anda telah dikemas kini.");
+        showAlert("Success", "Your profile has been updated.", "success");
         fetchProfile(userData.id);
       } else {
-        Alert.alert("Gagal", result.message);
+        showAlert("Failed", result.message, "error");
       }
     } catch (error) {
-      Alert.alert("Ralat", "Gagal menghubungi pelayan.");
+      showAlert("Error", "Failed to connect to server.", "error");
     } finally {
       setUpdating(false);
     }
   };
 
   const handleLogout = async () => {
-    await AsyncStorage.removeItem('userData');
-    navigation.reset({ index: 0, routes: [{ name: 'LoginScreen' }] });
+    showAlert(
+      "Logout Confirmation",
+      "Are you sure you want to log out?",
+      "warning",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Logout", 
+          style: "destructive", 
+          onPress: async () => {
+            await AsyncStorage.removeItem('userData');
+            navigation.reset({ index: 0, routes: [{ name: 'LoginScreen' }] });
+          } 
+        }
+      ]
+    );
   };
 
   if (loading) {

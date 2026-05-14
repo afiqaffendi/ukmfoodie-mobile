@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, SafeAreaView, Alert, Platform, StatusBar as RNStatusBar, KeyboardAvoidingView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, SafeAreaView, Platform, StatusBar as RNStatusBar, KeyboardAvoidingView } from 'react-native';
+import { useAlert } from '../components/CustomAlert';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 
 export default function CartScreen({ navigation, route }) {
+  const { showAlert } = useAlert();
   const { cartItems, stall } = route.params;
   const IP_ADDRESS = '10.19.95.173';
   
@@ -30,21 +32,18 @@ export default function CartScreen({ navigation, route }) {
     // Debug: Tengok kat terminal id apa yang masuk
     console.log("Cuba buang ID:", id);
 
-    Alert.alert(
+    showAlert(
       "Remove Item",
       "Are you sure you want to remove this item?",
+      "warning",
       [
         { text: "Cancel", style: "cancel" },
         { 
           text: "Remove", 
           style: "destructive", 
           onPress: () => {
-            // Gunakan String(item.id) !== String(id) untuk elak isu String vs Number
             const filtered = items.filter(item => String(item.id) !== String(id));
-            
-            console.log("Baki item selepas filter:", filtered.length);
             setItems(filtered);
-            
             if (filtered.length === 0) {
               navigation.goBack();
             }

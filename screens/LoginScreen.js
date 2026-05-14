@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Image } from 'react-native';
+import { useAlert } from '../components/CustomAlert';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,10 +9,22 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const { showAlert } = useAlert();
+  
+  useEffect(() => {
+    checkSession();
+  }, []);
+
+  const checkSession = async () => {
+    const session = await AsyncStorage.getItem('userData');
+    if (session) {
+      navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
+    }
+  };
 
   const handleLogin = async () => {
     if (!email || !password) {
-      Alert.alert('Ralat', 'Sila masukkan e-mel dan kata laluan.');
+      showAlert('Error', 'Please enter email and password.', 'error');
       return;
     }
 
@@ -38,14 +51,14 @@ export default function LoginScreen({ navigation }) {
         // Simpan data user ke AsyncStorage
         await AsyncStorage.setItem('userData', JSON.stringify(json.data));
 
-        Alert.alert('Berjaya', json.message);
-        // 3. TUKAR DI SINI: Guna navigation.navigate
-        navigation.navigate('MainTabs');
+        showAlert('Success', json.message, 'success');
+        // 3. TUKAR DI SINI: Guna navigation.reset supaya tak boleh tekan 'Back' balik ke Login
+        navigation.reset({ index: 0, routes: [{ name: 'MainTabs' }] });
       } else {
-        Alert.alert('Gagal', json.message);
+        showAlert('Failed', json.message, 'error');
       }
     } catch (error) {
-      Alert.alert('Ralat XAMPP', 'Sila semak terminal VS Code untuk melihat punca ralat sebenar.');
+      showAlert('Server Error', 'Could not connect to server. Please check your connection.', 'error');
       console.error(error);
     }
   };
@@ -60,9 +73,11 @@ export default function LoginScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.scrollContainer} showsVerticalScrollIndicator={false}>
 
         <View style={styles.logoSection}>
-          <View style={styles.logoYellowBox}>
-            <Ionicons name="fast-food-outline" size={45} color="black" />
-          </View>
+          <Image 
+            source={require('../assets/images/logo.png')} 
+            style={styles.mainLogo}
+            resizeMode="contain"
+          />
           <Text style={styles.appNameText}>UKMFoodie</Text>
         </View>
 
@@ -75,13 +90,13 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.inputLabel}>Email</Text>
           <View style={styles.inputWrapper}>
             <Ionicons name="mail-outline" size={20} color="#888" style={styles.inputIcon} />
-            <TextInput style={styles.input} placeholder="enter your email" placeholderTextColor="#A9A9A9" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+            <TextInput style={styles.input} placeholder="enter your email" placeholderTextColor="#D1D5DB" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
           </View>
 
           <Text style={styles.inputLabel}>Password</Text>
           <View style={styles.inputWrapper}>
             <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
-            <TextInput style={styles.input} placeholder="enter your password" placeholderTextColor="#A9A9A9" value={password} onChangeText={setPassword} secureTextEntry={true} />
+            <TextInput style={styles.input} placeholder="enter your password" placeholderTextColor="#D1D5DB" value={password} onChangeText={setPassword} secureTextEntry={true} />
           </View>
         </View>
 
@@ -108,8 +123,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F2F2F5' },
   scrollContainer: { flexGrow: 1, justifyContent: 'center', paddingHorizontal: 30, paddingTop: 50, paddingBottom: 20 },
   logoSection: { alignItems: 'center', marginBottom: 20 },
-  logoYellowBox: { width: 90, height: 90, backgroundColor: '#FFC93C', borderRadius: 18, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 5, elevation: 4 },
-  appNameText: { fontSize: 22, fontWeight: '700', color: '#1A1A1A', marginTop: 10, letterSpacing: 0.5 },
+  mainLogo: { width: 120, height: 120, borderRadius: 24, overflow: 'hidden', backgroundColor: '#FFC93C' },
+  appNameText: { fontSize: 22, fontWeight: '700', color: '#1A1A1A', marginTop: 5, letterSpacing: 0.5 },
   welcomeSection: { alignItems: 'center', marginBottom: 40 },
   welcomeTitle: { fontSize: 36, fontWeight: 'bold', color: '#1A1A1A', letterSpacing: 1, marginBottom: 5 },
   welcomeSubTitle: { fontSize: 16, color: '#666666' },

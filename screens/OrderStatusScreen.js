@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform, StatusBar as RNStatusBar, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform, StatusBar as RNStatusBar, TextInput } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { useToast } from '../components/Toast';
 
 export default function OrderStatusScreen({ navigation, route }) {
   const { order_id } = route.params;
+  const { showToast } = useToast();
   const IP_ADDRESS = '10.19.95.173';
   const API_BASE = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
 
@@ -72,7 +74,7 @@ export default function OrderStatusScreen({ navigation, route }) {
 
   const submitReview = async () => {
     if (rating === 0) {
-      Alert.alert("Error", "Please select a star rating.");
+      showToast("Please select a star rating", "error");
       return;
     }
 
@@ -91,14 +93,14 @@ export default function OrderStatusScreen({ navigation, route }) {
       });
       const result = await response.json();
       if (result.status === 'success') {
-        Alert.alert("Success", "Thank you for your review!");
+        showToast("Thank you for your review!", "success");
         fetchOrderStatus(); // Refresh to hide the rating box
       } else {
-        Alert.alert("Error", result.message);
+        showToast(result.message, "error");
       }
     } catch (error) {
       console.error("Error submitting review:", error);
-      Alert.alert("Error", "Failed to submit review.");
+      showToast("Failed to submit review.", "error");
     } finally {
       setSubmittingReview(false);
     }
@@ -227,7 +229,7 @@ export default function OrderStatusScreen({ navigation, route }) {
                 });
                 const result = await response.json();
                 if (result.status === 'success') {
-                  Alert.alert("Success", "Order marked as completed!");
+                  showToast("Order marked as completed!", "success");
                   fetchOrderStatus();
                 }
               } catch (error) {

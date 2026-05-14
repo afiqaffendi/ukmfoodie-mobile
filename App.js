@@ -16,6 +16,8 @@ import CustomerOrderScreen from './screens/CustomerOrderScreen';
 import CustomerProfileScreen from './screens/CustomerProfileScreen';
 import ChatScreen from './screens/ChatScreen';
 import AIChatScreen from './screens/AIChatScreen';
+import { ToastProvider } from './components/Toast';
+import { AlertProvider } from './components/CustomAlert';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,69 +60,74 @@ function MainTabs() {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="LoginScreen">
-        
-        <Stack.Screen 
-          name="LoginScreen" 
-          component={LoginScreen} 
-          options={{ headerShown: false }} 
-        />
+    <AlertProvider>
+      <ToastProvider>
+        <NavigationContainer>
+          <Stack.Navigator initialRouteName="LoginScreen">
 
-        {/* 2. Daftar skrin Register di sini */}
-        <Stack.Screen 
-          name="RegisterScreen" 
-          component={RegisterScreen} 
-          options={{ headerShown: false }} 
-        />
+          
+          <Stack.Screen 
+            name="LoginScreen" 
+            component={LoginScreen} 
+            options={{ headerShown: false }} 
+          />
 
-        <Stack.Screen 
-          name="MainTabs" 
-          component={MainTabs} 
-          options={{ headerShown: false }} 
-        />
-        
-        {/* We keep HomeScreen in stack just in case, but usually it's accessed via MainTabs */}
-        
-        <Stack.Screen 
-          name="MenuScreen" 
-          component={MenuScreen} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="CartScreen" 
-          component={CartScreen} 
-          options={{ headerShown: false }} 
-        />
+          {/* 2. Daftar skrin Register di sini */}
+          <Stack.Screen 
+            name="RegisterScreen" 
+            component={RegisterScreen} 
+            options={{ headerShown: false }} 
+          />
 
-        <Stack.Screen 
-          name="CheckoutScreen" 
-          component={CheckoutScreen} 
-          options={{ headerShown: false }} 
-        />
-        
-        <Stack.Screen 
-          name="OrderStatusScreen" 
-          component={OrderStatusScreen} 
-          options={{ headerShown: false }} 
-        />
-        
-        <Stack.Screen 
-          name="CustomerProfileScreen" 
-          component={CustomerProfileScreen} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="ChatScreen" 
-          component={ChatScreen} 
-          options={{ headerShown: false }} 
-        />
-        <Stack.Screen 
-          name="AIChatScreen" 
-          component={AIChatScreen} 
-          options={{ headerShown: false }} 
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen 
+            name="MainTabs" 
+            component={MainTabs} 
+            options={{ headerShown: false }} 
+          />
+          
+          {/* We keep HomeScreen in stack just in case, but usually it's accessed via MainTabs */}
+          
+          <Stack.Screen 
+            name="MenuScreen" 
+            component={MenuScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="CartScreen" 
+            component={CartScreen} 
+            options={{ headerShown: false }} 
+          />
+
+          <Stack.Screen 
+            name="CheckoutScreen" 
+            component={CheckoutScreen} 
+            options={{ headerShown: false }} 
+          />
+          
+          <Stack.Screen 
+            name="OrderStatusScreen" 
+            component={OrderStatusScreen} 
+            options={{ headerShown: false }} 
+          />
+          
+          <Stack.Screen 
+            name="CustomerProfileScreen" 
+            component={CustomerProfileScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="ChatScreen" 
+            component={ChatScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="AIChatScreen" 
+            component={AIChatScreen} 
+            options={{ headerShown: false }} 
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </ToastProvider>
+  </AlertProvider>
   );
 }

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, Alert, StatusBar as RNStatusBar } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, StatusBar as RNStatusBar, Image } from 'react-native';
+import { useAlert } from '../components/CustomAlert';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 
 // 1. TUKAR: Guna { navigation }, buang useRouter
 export default function RegisterScreen({ navigation }) {
+  const { showAlert } = useAlert();
 
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
@@ -15,12 +17,12 @@ export default function RegisterScreen({ navigation }) {
 
   const handleRegister = async () => {
     if (!fullName || !phone || !email || !password || !confirmPassword) {
-      Alert.alert('Ralat', 'Sila isi semua maklumat!');
+      showAlert('Error', 'Please fill in all information!', 'error');
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Ralat', 'Kata laluan tidak sepadan!');
+      showAlert('Error', 'Passwords do not match!', 'error');
       return;
     }
 
@@ -50,14 +52,14 @@ export default function RegisterScreen({ navigation }) {
       const json = JSON.parse(rawText);
 
       if (json.status === 'success') {
-        Alert.alert('Berjaya!', json.message);
+        showAlert('Success!', json.message, 'success');
         // 3. TUKAR: Kembali ke LoginScreen guna navigate
         navigation.navigate('LoginScreen');
       } else {
-        Alert.alert('Gagal', json.message);
+        showAlert('Failed', json.message, 'error');
       }
     } catch (error) {
-      Alert.alert('Ralat Rangkaian', 'Sila semak terminal VS Code untuk punca ralat.');
+      showAlert('Network Error', 'Could not connect to server.', 'error');
       console.error(error);
     }
   };
@@ -72,9 +74,11 @@ export default function RegisterScreen({ navigation }) {
         <StatusBar style="dark" />
 
         <View style={styles.topHeader}>
-          <View style={styles.headerLogoBox}>
-            <MaterialCommunityIcons name="food-fork-drink" size={20} color="black" />
-          </View>
+          <Image 
+            source={require('../assets/images/logo.png')} 
+            style={styles.headerLogo}
+            resizeMode="contain"
+          />
           <Text style={styles.headerAppName}>UKMFoodie</Text>
         </View>
 
@@ -95,31 +99,31 @@ export default function RegisterScreen({ navigation }) {
             <Text style={styles.inputLabel}>Full Name</Text>
             <View style={styles.inputWrapper}>
               <Ionicons name="person-outline" size={20} color="#888" style={styles.inputIcon} />
-              <TextInput style={styles.input} placeholder="please enter your full name" placeholderTextColor="#A9A9A9" value={fullName} onChangeText={setFullName} />
+              <TextInput style={styles.input} placeholder="please enter your full name" placeholderTextColor="#D1D5DB" value={fullName} onChangeText={setFullName} />
             </View>
 
             <Text style={styles.inputLabel}>Phone Number</Text>
             <View style={styles.inputWrapper}>
               <Ionicons name="call-outline" size={20} color="#888" style={styles.inputIcon} />
-              <TextInput style={styles.input} placeholder="eg: 012-3456789" placeholderTextColor="#A9A9A9" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
+              <TextInput style={styles.input} placeholder="eg: 012-3456789" placeholderTextColor="#D1D5DB" value={phone} onChangeText={setPhone} keyboardType="phone-pad" />
             </View>
 
             <Text style={styles.inputLabel}>Email Address</Text>
             <View style={styles.inputWrapper}>
               <Ionicons name="mail-outline" size={20} color="#888" style={styles.inputIcon} />
-              <TextInput style={styles.input} placeholder="eg: ali@siswa.ukm.edu.my" placeholderTextColor="#A9A9A9" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
+              <TextInput style={styles.input} placeholder="eg: ali@siswa.ukm.edu.my" placeholderTextColor="#D1D5DB" value={email} onChangeText={setEmail} keyboardType="email-address" autoCapitalize="none" />
             </View>
 
             <Text style={styles.inputLabel}>Create Password</Text>
             <View style={styles.inputWrapper}>
               <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
-              <TextInput style={styles.input} placeholder="min 6 character" placeholderTextColor="#A9A9A9" value={password} onChangeText={setPassword} secureTextEntry={true} />
+              <TextInput style={styles.input} placeholder="min 6 character" placeholderTextColor="#D1D5DB" value={password} onChangeText={setPassword} secureTextEntry={true} />
             </View>
 
             <Text style={styles.inputLabel}>Confirm Password</Text>
             <View style={styles.inputWrapper}>
               <Ionicons name="lock-closed-outline" size={20} color="#888" style={styles.inputIcon} />
-              <TextInput style={styles.input} placeholder="min 6 character" placeholderTextColor="#A9A9A9" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} />
+              <TextInput style={styles.input} placeholder="min 6 character" placeholderTextColor="#D1D5DB" value={confirmPassword} onChangeText={setConfirmPassword} secureTextEntry={true} />
             </View>
           </View>
 
@@ -148,7 +152,7 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollContainer: { flexGrow: 1, paddingHorizontal: 25, paddingBottom: 40 },
   topHeader: { alignItems: 'center', paddingTop: 10, paddingBottom: 15, backgroundColor: '#EEEEF0' },
-  headerLogoBox: { width: 45, height: 45, backgroundColor: '#FFC93C', borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  headerLogo: { width: 45, height: 45, borderRadius: 12, overflow: 'hidden', backgroundColor: '#FFC93C' },
   headerAppName: { fontSize: 16, fontWeight: 'bold', color: '#1A1A1A', marginTop: 5 },
   backButton: { flexDirection: 'row', alignItems: 'center', marginTop: 15, marginBottom: 10 },
   backButtonText: { fontSize: 12, fontWeight: 'bold', color: '#1A1A1A', marginLeft: 2 },

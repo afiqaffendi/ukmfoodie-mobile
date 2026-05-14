@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image, Alert, Platform, StatusBar as RNStatusBar, Linking } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image, Platform, StatusBar as RNStatusBar, Linking } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useToast } from '../components/Toast';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // TAMBAHAN: Masukkan { navigation } di sini supaya kita boleh bertukar skrin
 export default function HomeScreen({ navigation }) {
+  const { showToast } = useToast();
   const [stalls, setStalls] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -12,8 +15,16 @@ export default function HomeScreen({ navigation }) {
   const API_URL = 'http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php';
 
   useEffect(() => {
+    checkAuth();
     fetchStalls();
   }, []);
+
+  const checkAuth = async () => {
+    const session = await AsyncStorage.getItem('userData');
+    if (!session) {
+      navigation.reset({ index: 0, routes: [{ name: 'LoginScreen' }] });
+    }
+  };
 
   const fetchStalls = async () => {
     try {
@@ -32,7 +43,7 @@ export default function HomeScreen({ navigation }) {
 
   const handleGoToMap = (latitude, longitude, stallName) => {
     if (!latitude || !longitude) {
-      Alert.alert("Lokasi tidak ditemui", "Gerai ini belum menetapkan lokasi tepat.");
+      showToast("This stall hasn't set their location yet.", "info");
       return;
     }
 
@@ -55,7 +66,11 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.headerContainer}>
         <View style={styles.logoRow}>
           <View style={styles.logoBox}>
-            <Ionicons name="restaurant" size={16} color="#1A1A1A" />
+            <Image 
+              source={require('../assets/images/logo.png')} 
+              style={styles.logoImage}
+              resizeMode="contain"
+            />
           </View>
           <Text style={styles.logoText}>UKMFoodie</Text>
         </View>
@@ -109,7 +124,7 @@ export default function HomeScreen({ navigation }) {
                   if (isOpen) {
                     navigation.navigate('MenuScreen', { stall: item });
                   } else {
-                    Alert.alert('Stall Closed', 'This stall is currently closed. Please check back later.');
+                    showToast("This stall is currently closed. Please check back later.", "error");
                   }
                 }}
               >
@@ -202,13 +217,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoBox: {
-    backgroundColor: '#FFC93C',
     width: 32,
     height: 32,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    overflow: 'hidden',
     marginRight: 10,
+    backgroundColor: '#FFC93C',
+  },
+  logoImage: {
+    width: '100%',
+    height: '100%',
   },
   logoText: {
     fontSize: 20,

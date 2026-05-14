@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, Alert, ActivityIndicator, Platform, StatusBar as RNStatusBar, Modal, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Platform, StatusBar as RNStatusBar, Modal, Dimensions } from 'react-native';
+import { useAlert } from '../components/CustomAlert';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CheckoutScreen({ navigation, route }) {
+  const { showAlert } = useAlert();
   const { orderData } = route.params;
   
   // IP Address Hotspot/Network awak
@@ -68,7 +70,7 @@ export default function CheckoutScreen({ navigation, route }) {
 
   const submitOrder = async () => {
     if (!image) {
-      Alert.alert("Missing Receipt", "Please upload your payment receipt to proceed.");
+      showAlert("Missing Receipt", "Please upload your payment receipt to proceed.", "warning");
       return;
     }
 
@@ -96,13 +98,13 @@ export default function CheckoutScreen({ navigation, route }) {
 
       const result = await response.json();
       if (result.status === 'success') {
-        Alert.alert("Success!", "Your order has been placed.");
+        showAlert("Success!", "Your order has been placed.", "success");
         navigation.navigate('OrderStatusScreen', { order_id: result.order_id });
       } else {
-        Alert.alert("Error", result.message);
+        showAlert("Error", result.message, "error");
       }
     } catch (error) {
-      Alert.alert("Network Error", "Could not connect to server.");
+      showAlert("Network Error", "Could not connect to server.", "error");
     } finally {
       setLoading(false);
     }
