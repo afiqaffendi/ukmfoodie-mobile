@@ -16,6 +16,8 @@ import CustomerOrderScreen from './screens/CustomerOrderScreen';
 import CustomerProfileScreen from './screens/CustomerProfileScreen';
 import ChatScreen from './screens/ChatScreen';
 import AIChatScreen from './screens/AIChatScreen';
+import LocationSearchScreen from './screens/LocationSearchScreen';
+import CategoryItemsScreen from './screens/CategoryItemsScreen';
 import { ToastProvider } from './components/Toast';
 import { AlertProvider } from './components/CustomAlert';
 
@@ -123,6 +125,16 @@ export default function App() {
           <Stack.Screen 
             name="AIChatScreen" 
             component={AIChatScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="LocationSearchScreen" 
+            component={LocationSearchScreen} 
+            options={{ headerShown: false }} 
+          />
+          <Stack.Screen 
+            name="CategoryItemsScreen" 
+            component={CategoryItemsScreen} 
             options={{ headerShown: false }} 
           />
         </Stack.Navigator>

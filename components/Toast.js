@@ -13,8 +13,8 @@ export const ToastProvider = ({ children }) => {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const slideAnim = useRef(new Animated.Value(-100)).current;
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
+  const showToast = (title, message = '', type = 'success') => {
+    setToast({ title, message, type });
     
     // Animate in
     Animated.parallel([
@@ -30,10 +30,10 @@ export const ToastProvider = ({ children }) => {
       }),
     ]).start();
 
-    // Hide after 3 seconds
+    // Hide after 4 seconds for readability
     setTimeout(() => {
       hideToast();
-    }, 3000);
+    }, 4000);
   };
 
   const hideToast = () => {
@@ -66,11 +66,14 @@ export const ToastProvider = ({ children }) => {
         >
           <Ionicons 
             name={toast.type === 'success' ? 'checkmark-circle' : toast.type === 'error' ? 'alert-circle' : 'information-circle'} 
-            size={24} 
+            size={28} 
             color="#FFF" 
           />
-          <Text style={styles.toastText}>{toast.message}</Text>
-          <TouchableOpacity onPress={hideToast}>
+          <View style={styles.textContainer}>
+            <Text style={styles.toastTitle}>{toast.title}</Text>
+            {toast.message ? <Text style={styles.toastMessage}>{toast.message}</Text> : null}
+          </View>
+          <TouchableOpacity onPress={hideToast} style={styles.closeBtn}>
             <Ionicons name="close" size={20} color="#FFF" />
           </TouchableOpacity>
         </Animated.View>
@@ -86,22 +89,34 @@ const styles = StyleSheet.create({
     left: 20,
     right: 20,
     padding: 15,
-    borderRadius: 12,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    elevation: 12,
     zIndex: 9999,
   },
-  toastText: {
-    color: '#FFF',
-    fontSize: 14,
-    fontWeight: '600',
+  textContainer: {
     flex: 1,
-    marginLeft: 10,
+    marginLeft: 12,
+    marginRight: 8,
+  },
+  toastTitle: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  toastMessage: {
+    color: 'rgba(255,255,255,0.9)',
+    fontSize: 13,
+    fontWeight: '500',
+    marginTop: 2,
+  },
+  closeBtn: {
+    padding: 4,
   },
   success: {
     backgroundColor: '#50CD89', // Green
@@ -110,6 +125,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1416C', // Red
   },
   info: {
-    backgroundColor: '#FFC93C', // Yellow/Gold
+    backgroundColor: '#1A1A1A', // Changed to Dark for better contrast with Gold icon
+    borderLeftWidth: 5,
+    borderLeftColor: '#FFC93C',
   }
 });

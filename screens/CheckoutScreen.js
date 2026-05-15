@@ -99,7 +99,7 @@ export default function CheckoutScreen({ navigation, route }) {
       const result = await response.json();
       if (result.status === 'success') {
         showAlert("Success!", "Your order has been placed.", "success");
-        navigation.navigate('OrderStatusScreen', { order_id: result.order_id });
+        navigation.replace('OrderStatusScreen', { order_id: result.order_id });
       } else {
         showAlert("Error", result.message, "error");
       }
@@ -135,6 +135,11 @@ export default function CheckoutScreen({ navigation, route }) {
               <View style={styles.itemInfo}>
                 <Text style={styles.itemName}>{item.item_name}</Text>
                 <Text style={styles.itemQty}>Quantity: {item.quantity}</Text>
+                {item.note && (
+                  <View style={styles.itemNoteContainer}>
+                    <Text style={styles.itemNoteText}>Note: {item.note}</Text>
+                  </View>
+                )}
               </View>
               <Text style={styles.itemPrice}>RM {(parseFloat(item.price) * item.quantity).toFixed(2)}</Text>
             </View>
@@ -257,6 +262,8 @@ const styles = StyleSheet.create({
   itemInfo: { flex: 1, marginLeft: 12 },
   itemName: { fontSize: 14, fontWeight: '600' },
   itemQty: { fontSize: 12, color: '#888' },
+  itemNoteContainer: { backgroundColor: '#F9FAFB', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, marginTop: 4 },
+  itemNoteText: { fontSize: 10, color: '#F1416C', fontStyle: 'italic' },
   itemPrice: { fontSize: 14, fontWeight: '600' },
   divider: { height: 1, backgroundColor: '#F0F0F0', marginVertical: 10 },
   summaryRow: { flexDirection: 'row', justifyContent: 'space-between' },

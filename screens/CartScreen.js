@@ -88,6 +88,13 @@ export default function CartScreen({ navigation, route }) {
                   <Text style={styles.itemName}>{item.item_name}</Text>
                   <Text style={styles.itemPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
                   
+                  {item.note && (
+                    <View style={styles.itemNoteContainer}>
+                      <Ionicons name="chatbubble-outline" size={12} color="#888" />
+                      <Text style={styles.itemNoteText}>{item.note}</Text>
+                    </View>
+                  )}
+                  
                   <View style={styles.quantityControls}>
                     <TouchableOpacity onPress={() => updateQuantity(item.id, 'remove')} style={styles.qtyBtn}>
                       <Ionicons name="remove" size={16} color="#1A1A1A" />
@@ -163,6 +170,8 @@ const styles = StyleSheet.create({
   itemDetails: { flex: 1, marginLeft: 15 },
   itemName: { fontSize: 15, fontWeight: '600', color: '#1A1A1A' },
   itemPrice: { fontSize: 14, color: '#666', marginTop: 2 },
+  itemNoteContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F9FAFB', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, marginTop: 6, gap: 5 },
+  itemNoteText: { fontSize: 12, color: '#888', fontStyle: 'italic' },
   quantityControls: { flexDirection: 'row', alignItems: 'center', marginTop: 10, gap: 15 },
   qtyBtn: { backgroundColor: '#FDE68A', padding: 4, borderRadius: 6 },
   quantityText: { fontWeight: '700', fontSize: 14 },
