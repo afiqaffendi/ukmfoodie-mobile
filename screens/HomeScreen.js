@@ -293,6 +293,18 @@ export default function HomeScreen({ navigation, route }) {
                         }}
                       >
                         <ImageBackground source={{ uri: imagePath }} style={styles.featuredImg}>
+                          {stall.latitude && stall.longitude && (
+                            <TouchableOpacity
+                              style={styles.carouselGoBtn}
+                              onPress={(e) => {
+                                e.stopPropagation();
+                                handleGoToMap(stall.latitude, stall.longitude, stall.stall_name);
+                              }}
+                            >
+                              <Ionicons name="map-outline" size={12} color="#FFF" />
+                              <Text style={styles.carouselGoText}>Go</Text>
+                            </TouchableOpacity>
+                          )}
                           <LinearGradient
                             colors={['transparent', 'rgba(0,0,0,0.8)']}
                             style={styles.featuredOverlay}
@@ -497,7 +509,19 @@ export default function HomeScreen({ navigation, route }) {
                         </View>
                       </View>
                     </View>
-                    <Ionicons name="chevron-forward" size={20} color="#DDD" />
+                    {stall.latitude && stall.longitude ? (
+                      <TouchableOpacity
+                        style={styles.vendorGoBtn}
+                        onPress={(e) => {
+                          e.stopPropagation();
+                          handleGoToMap(stall.latitude, stall.longitude, stall.stall_name);
+                        }}
+                      >
+                        <Ionicons name="map-outline" size={14} color="#FFFFFF" />
+                      </TouchableOpacity>
+                    ) : (
+                      <Ionicons name="chevron-forward" size={20} color="#DDD" />
+                    )}
                   </TouchableOpacity>
                 ))}
               </View>
@@ -643,8 +667,8 @@ const styles = StyleSheet.create({
   featuredCard: { width: windowWidth - 40, height: 180, borderRadius: 20, overflow: 'hidden', backgroundColor: '#DDD' },
   featuredImg: { width: '100%', height: '100%', justifyContent: 'flex-end' },
   featuredOverlay: { height: '100%', width: '100%', justifyContent: 'flex-end', padding: 20 },
-  featuredName: { fontSize: 22, fontWeight: '900', color: '#FFF', marginBottom: 5 },
-  featuredMeta: { flexDirection: 'row', alignItems: 'center', gap: 15 },
+  featuredName: { fontSize: 22, fontWeight: '900', color: '#FFF', marginBottom: 5, paddingRight: 75 },
+  featuredMeta: { flexDirection: 'row', alignItems: 'center', gap: 15, paddingRight: 75 },
   featuredRating: { flexDirection: 'row', alignItems: 'center' },
   featuredRatingText: { color: '#FFF', fontSize: 12, marginLeft: 4, fontWeight: '700' },
   featuredLoc: { flexDirection: 'row', alignItems: 'center', flex: 1 },
@@ -652,6 +676,8 @@ const styles = StyleSheet.create({
   pagination: { flexDirection: 'row', justifyContent: 'center', marginTop: 12, gap: 6 },
   dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#DDD' },
   activeDot: { width: 20, backgroundColor: '#FFC93C' },
+  carouselGoBtn: { position: 'absolute', bottom: 15, right: 15, backgroundColor: '#60A5FA', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, gap: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 3, elevation: 3, zIndex: 100 },
+  carouselGoText: { color: '#FFF', fontSize: 12, fontWeight: 'bold' },
 
   // Discovery Section
   discoveryContainer: { marginBottom: 30 },
@@ -685,6 +711,7 @@ const styles = StyleSheet.create({
   ratingText: { fontSize: 12, fontWeight: '600', color: '#444' },
   statusBadge: { paddingHorizontal: 8, paddingVertical: 2, borderRadius: 6 },
   statusText: { fontSize: 10, fontWeight: '700' },
+  vendorGoBtn: { backgroundColor: '#60A5FA', width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center', shadowColor: '#60A5FA', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 3, elevation: 2, marginLeft: 10 },
 
   // Carousel Enhancements
   carouselHeader: { marginBottom: 10, paddingHorizontal: 5 },

@@ -91,7 +91,25 @@ export default function MenuScreen({ navigation, route }) {
   };
 
   const handleOpenItem = (item) => {
-    setSelectedItem(item);
+    if (item.quantity === 0) {
+      const updatedMenu = menuList.map(i => {
+        if (i.id === item.id) {
+          return { ...i, quantity: 1 };
+        }
+        return i;
+      });
+      
+      let newTotal = 0;
+      updatedMenu.forEach(i => {
+        newTotal += parseFloat(i.price) * i.quantity;
+      });
+
+      setMenuList(updatedMenu);
+      setTotalPrice(newTotal);
+      setSelectedItem({ ...item, quantity: 1 });
+    } else {
+      setSelectedItem(item);
+    }
     setModalVisible(true);
   };
 
@@ -257,24 +275,23 @@ export default function MenuScreen({ navigation, route }) {
                       style={styles.modalCloseBtn} 
                       onPress={() => setModalVisible(false)}
                     >
-                      <Ionicons name="close" size={22} color="#FFF" />
+                      <Ionicons name="close" size={20} color="#FFF" />
                     </TouchableOpacity>
                   </View>
 
                   <View style={styles.modalInfo}>
                     <View style={styles.modalHeaderRow}>
-                      <View style={{ flex: 1 }}>
-                        <Text style={styles.modalName}>{selectedItem.item_name}</Text>
-                        <Text style={styles.modalCategory}>{selectedItem.category || 'Food'}</Text>
-                      </View>
+                      <Text style={styles.modalName}>{selectedItem.item_name}</Text>
                       <Text style={styles.modalPrice}>RM {parseFloat(selectedItem.price).toFixed(2)}</Text>
                     </View>
+                    
+                    <Text style={styles.modalCategory}>{selectedItem.category || 'Food'}</Text>
 
                     <View style={styles.divider} />
 
                     <View style={styles.noteSection}>
                       <View style={styles.noteHeader}>
-                        <Ionicons name="chatbubble-ellipses-outline" size={18} color="#1A1A1A" />
+                        <Ionicons name="chatbubble-outline" size={18} color="#555" />
                         <Text style={styles.noteTitle}>Special Instructions</Text>
                         <Text style={styles.optionalText}>(Optional)</Text>
                       </View>
@@ -297,21 +314,21 @@ export default function MenuScreen({ navigation, route }) {
                   <View style={styles.modalQuantityControls}>
                     <TouchableOpacity 
                       onPress={() => updateQuantity(selectedItem.id, 'remove')}
-                      style={styles.modalQtyBtn}
+                      style={styles.modalQtyBtnMinus}
                     >
-                      <Ionicons name="remove" size={20} color="#1A1A1A" />
+                      <Ionicons name="remove" size={20} color="#555" />
                     </TouchableOpacity>
                     <Text style={styles.modalQtyText}>{selectedItem.quantity}</Text>
                     <TouchableOpacity 
                       onPress={() => updateQuantity(selectedItem.id, 'add')}
-                      style={[styles.modalQtyBtn, { backgroundColor: '#FFC93C' }]}
+                      style={styles.modalQtyBtnPlus}
                     >
                       <Ionicons name="add" size={20} color="#1A1A1A" />
                     </TouchableOpacity>
                   </View>
 
                   <TouchableOpacity 
-                    style={[styles.doneBtn, { flex: 1, marginLeft: 15 }]}
+                    style={styles.doneBtn}
                     onPress={() => setModalVisible(false)}
                   >
                     <Text style={styles.doneBtnText}>
@@ -463,28 +480,29 @@ const styles = StyleSheet.create({
   totalAmount: { fontSize: 20, fontWeight: 'bold', color: '#E53935' },
   cartButton: { backgroundColor: '#FFC93C', paddingHorizontal: 30, paddingVertical: 12, borderRadius: 12, shadowColor: '#FFC93C', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
   cartButtonText: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A' },
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.6)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: '#FFF', borderTopLeftRadius: 32, borderTopRightRadius: 32, overflow: 'hidden', height: '80%' },
-  modalImageContainer: { width: '100%', height: 280, position: 'relative' },
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: Platform.OS === 'ios' ? 120 : 100 },
+  modalContent: { backgroundColor: '#FFF', borderRadius: 24, overflow: 'hidden', maxHeight: '85%', shadowColor: '#000', shadowOffset: { width: 0, height: 10 }, shadowOpacity: 0.2, shadowRadius: 15, elevation: 10 },
+  modalImageContainer: { width: '100%', height: 210, position: 'relative' },
   modalImage: { width: '100%', height: '100%', backgroundColor: '#F8F9FA' },
-  modalCloseBtn: { position: 'absolute', top: 20, right: 20, backgroundColor: 'rgba(0,0,0,0.4)', width: 32, height: 32, borderRadius: 16, justifyContent: 'center', alignItems: 'center' },
-  modalInfo: { padding: 24 },
-  modalHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 },
-  modalName: { fontSize: 20, fontWeight: '800', color: '#1A1A1A', flex: 1, marginRight: 10 },
-  modalCategory: { fontSize: 12, color: '#999', textTransform: 'uppercase', letterSpacing: 0.5, marginTop: 4 },
-  modalPrice: { fontSize: 20, fontWeight: '800', color: '#E53935' },
-  divider: { height: 1, backgroundColor: '#F0F0F0', marginVertical: 20 },
+  modalCloseBtn: { position: 'absolute', top: 16, right: 16, backgroundColor: 'rgba(0,0,0,0.6)', width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
+  modalInfo: { padding: 20 },
+  modalHeaderRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 },
+  modalName: { fontSize: 20, fontWeight: 'bold', color: '#1A1A1A', flex: 1, marginRight: 10 },
+  modalCategory: { fontSize: 12, color: '#999', textTransform: 'uppercase', letterSpacing: 1, fontWeight: 'bold', marginTop: 2 },
+  modalPrice: { fontSize: 20, fontWeight: 'bold', color: '#E53935' },
+  divider: { height: 1, backgroundColor: '#EAEBEE', marginVertical: 16 },
   noteSection: { marginTop: 5 },
-  noteHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  noteTitle: { fontSize: 15, fontWeight: '700', color: '#1A1A1A', marginLeft: 8 },
-  optionalText: { fontSize: 12, color: '#AAA', marginLeft: 6 },
-  modalNoteInput: { backgroundColor: '#F9FAFB', borderRadius: 12, padding: 16, fontSize: 14, color: '#1A1A1A', textAlignVertical: 'top', minHeight: 100, borderWidth: 1, borderColor: '#F0F0F0' },
-  modalFooter: { padding: 20, paddingBottom: Platform.OS === 'ios' ? 40 : 20, borderTopWidth: 1, borderTopColor: '#F5F5F5', flexDirection: 'row', alignItems: 'center' },
-  modalQuantityControls: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3F4F6', borderRadius: 14, padding: 4 },
-  modalQtyBtn: { width: 40, height: 40, backgroundColor: '#FFF', borderRadius: 10, justifyContent: 'center', alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 1 },
-  modalQtyText: { fontSize: 18, fontWeight: 'bold', marginHorizontal: 15, minWidth: 20, textAlign: 'center' },
-  doneBtn: { backgroundColor: '#FFC93C', paddingVertical: 14, borderRadius: 14, alignItems: 'center', shadowColor: '#FFC93C', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 3 },
-  doneBtnText: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A' },
+  noteHeader: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  noteTitle: { fontSize: 15, fontWeight: '600', color: '#1A1A1A', marginLeft: 8 },
+  optionalText: { fontSize: 13, color: '#999', marginLeft: 6 },
+  modalNoteInput: { backgroundColor: '#F9FAFB', borderRadius: 16, padding: 14, fontSize: 14, color: '#1A1A1A', textAlignVertical: 'top', minHeight: 90, borderWidth: 1, borderColor: '#EAEBEE' },
+  modalFooter: { paddingHorizontal: 20, paddingBottom: Platform.OS === 'ios' ? 30 : 20, paddingTop: 10, flexDirection: 'row', alignItems: 'center', backgroundColor: '#FFF' },
+  modalQuantityControls: { flexDirection: 'row', alignItems: 'center' },
+  modalQtyBtnMinus: { width: 44, height: 44, backgroundColor: '#FFF', borderRadius: 12, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#EAEBEE', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 2, elevation: 1 },
+  modalQtyBtnPlus: { width: 44, height: 44, backgroundColor: '#FFC93C', borderRadius: 12, justifyContent: 'center', alignItems: 'center', shadowColor: '#FFC93C', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4, elevation: 2 },
+  modalQtyText: { fontSize: 18, fontWeight: 'bold', marginHorizontal: 12, minWidth: 20, textAlign: 'center', color: '#1A1A1A' },
+  doneBtn: { flex: 1, backgroundColor: '#FFC93C', height: 46, borderRadius: 14, justifyContent: 'center', alignItems: 'center', marginLeft: 16, shadowColor: '#FFC93C', shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.25, shadowRadius: 5, elevation: 3 },
+  doneBtnText: { fontSize: 16, fontWeight: 'bold', color: '#1A1A1A' },
   emptySearch: { alignItems: 'center', marginTop: 60 },
   emptyText: { marginTop: 12, color: '#AAA', fontSize: 16, fontWeight: '500' },
 
