@@ -7,7 +7,7 @@ import { StatusBar } from 'expo-status-bar';
 export default function CartScreen({ navigation, route }) {
   const { showAlert } = useAlert();
   const { cartItems, stall } = route.params;
-  const IP_ADDRESS = '10.19.95.173';
+  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
   
   // Inisialkan state dengan items yang diterima
   const [items, setItems] = useState(cartItems);
@@ -60,6 +60,14 @@ export default function CartScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
@@ -81,7 +89,7 @@ export default function CartScreen({ navigation, route }) {
             {items.map((item, index) => (
               <View key={item.id.toString()} style={[styles.cartItemRow, index !== items.length - 1 && styles.itemDivider]}>
                 <Image 
-                   source={{ uri: `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
+                   source={{ uri: `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
                    style={styles.itemImage} 
                 />
                 <View style={styles.itemDetails}>
@@ -158,7 +166,7 @@ export default function CartScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#F8F9FA', paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: '#FFF' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: 'transparent' },
   headerTitle: { fontSize: 18, fontWeight: 'bold' },
   scrollContent: { padding: 20 },
   stallName: { fontSize: 14, color: '#666', marginBottom: 20 },
@@ -185,5 +193,61 @@ const styles = StyleSheet.create({
   subtotalLabel: { fontSize: 16, color: '#F1416C', fontWeight: '500' },
   subtotalAmount: { fontSize: 16, fontWeight: 'bold', color: '#F1416C' },
   checkoutBtn: { backgroundColor: '#FFC93C', padding: 18, borderRadius: 15, alignItems: 'center' },
-  checkoutText: { fontSize: 16, fontWeight: 'bold', color: '#1A1A1A' }
+  checkoutText: { fontSize: 16, fontWeight: 'bold', color: '#1A1A1A' },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
 });

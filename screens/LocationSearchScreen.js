@@ -47,7 +47,7 @@ export default function LocationSearchScreen({ navigation }) {
 
   const fetchStalls = async () => {
     try {
-      const response = await fetch('http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php');
+      const response = await fetch('https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php');
       const data = await response.json();
       if (data.status === 'success') {
         setStalls(data.data);
@@ -76,6 +76,15 @@ export default function LocationSearchScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
+
       {/* STICKY HEADER */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
@@ -164,5 +173,62 @@ const styles = StyleSheet.create({
   stallCountText: { fontSize: 12, color: '#888', marginTop: 4 },
   
   emptyState: { alignItems: 'center', marginTop: 60 },
-  emptyText: { marginTop: 10, color: '#AAA', fontSize: 16 }
+  emptyText: { marginTop: 10, color: '#AAA', fontSize: 16 },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
+
 });

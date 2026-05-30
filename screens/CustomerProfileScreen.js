@@ -16,8 +16,8 @@ export default function CustomerProfileScreen({ navigation }) {
   const [updating, setUpdating] = useState(false);
   const { showAlert } = useAlert();
 
-  const IP_ADDRESS = '10.19.95.173';
-  const API_BASE = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
+  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
+  const API_BASE = `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
 
   useEffect(() => {
     loadUserSession();
@@ -143,6 +143,16 @@ export default function CustomerProfileScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
+      
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={24} color="#1A1A1A" />
@@ -230,5 +240,61 @@ const styles = StyleSheet.create({
   updateBtnText: { color: '#FFF', fontSize: 16, fontWeight: 'bold' },
   logoutBtn: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 40, padding: 15 },
   logoutBtnText: { color: '#F1416C', fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
-  center: { flex: 1, justifyContent: 'center', alignItems: 'center' }
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
 });

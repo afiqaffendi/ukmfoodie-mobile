@@ -28,7 +28,7 @@ export default function HomeScreen({ navigation, route }) {
   });
 
   // ⚠️ PENTING: Gantikan dengan IP Address laptop awak
-  const API_URL = 'http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php';
+  const API_URL = 'https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php';
 
   useEffect(() => {
     // Handle navigation params from LocationSearchScreen
@@ -86,7 +86,7 @@ export default function HomeScreen({ navigation, route }) {
   const fetchRandomItems = async () => {
     try {
       // Use the same base IP for random items
-      const response = await fetch('http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/fetch_random_items.php');
+      const response = await fetch('https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/fetch_random_items.php');
       const result = await response.json();
       if (result.status === 'success') {
         setRandomItems(result.data);
@@ -207,6 +207,15 @@ export default function HomeScreen({ navigation, route }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
 
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
+
       {/* === HEADER (NON-STICKY) === */}
       <View style={styles.headerContainer}>
         <View style={styles.logoRow}>
@@ -267,7 +276,7 @@ export default function HomeScreen({ navigation, route }) {
                 >
                   {featuredStalls.map((stall, index) => {
                     const imagePath = stall.stall_image && stall.stall_image !== 'default_stall.jpg'
-                      ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
+                      ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
                       : 'https://via.placeholder.com/600x400?text=UKMFoodie';
 
                     return (
@@ -346,7 +355,7 @@ export default function HomeScreen({ navigation, route }) {
                 >
                   {[...randomItems, ...randomItems, ...randomItems].map((item, index) => {
                     const foodImg = item.food_image
-                      ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                      ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
                       : 'https://via.placeholder.com/200?text=Food';
 
                     const stallObj = stalls.find(s => s.id == item.stall_id);
@@ -467,7 +476,7 @@ export default function HomeScreen({ navigation, route }) {
                     <Image
                       source={{
                         uri: stall.stall_image && stall.stall_image !== 'default_stall.jpg'
-                          ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
+                          ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
                           : 'https://via.placeholder.com/150?text=Stall'
                       }}
                       style={styles.vendorImg}
@@ -504,7 +513,7 @@ export default function HomeScreen({ navigation, route }) {
             {filteredStalls.map((item, index) => {
               const isOpen = item.status === 'Buka';
               const imagePath = item.stall_image && item.stall_image !== 'default_stall.jpg'
-                ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.stall_image}`
+                ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.stall_image}`
                 : 'https://via.placeholder.com/600x400?text=No+Image';
 
               return (
@@ -689,5 +698,61 @@ const styles = StyleSheet.create({
   emptyCarousel: { height: 200, marginBottom: 20, borderRadius: 25, overflow: 'hidden', borderWidth: 1, borderColor: '#EEE' },
   emptyCarouselGradient: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 20 },
   emptyCarouselTitle: { fontSize: 18, fontWeight: '800', color: '#666', marginTop: 10 },
-  emptyCarouselText: { fontSize: 13, color: '#AAA', textAlign: 'center', marginTop: 5, paddingHorizontal: 20 }
+  emptyCarouselText: { fontSize: 13, color: '#AAA', textAlign: 'center', marginTop: 5, paddingHorizontal: 20 },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
 });

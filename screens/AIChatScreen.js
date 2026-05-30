@@ -14,7 +14,7 @@ export default function AIChatScreen({ navigation }) {
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef();
 
-  const IP_ADDRESS = '10.19.95.173';
+  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
 
   const sendMessage = async () => {
     if (inputText.trim() === '' || isLoading) return;
@@ -27,7 +27,7 @@ export default function AIChatScreen({ navigation }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/ai_chat.php`, {
+      const response = await fetch(`https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/ai_chat.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text })
@@ -62,6 +62,15 @@ export default function AIChatScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
+
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
@@ -133,7 +142,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 15,
     paddingVertical: 14,
-    backgroundColor: '#FFF',
+    backgroundColor: 'transparent',
     borderBottomWidth: 1,
     borderBottomColor: '#EEE',
   },
@@ -216,4 +225,60 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
 });

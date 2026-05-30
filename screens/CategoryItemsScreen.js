@@ -17,7 +17,7 @@ export default function CategoryItemsScreen({ navigation, route }) {
 
   const fetchStalls = async () => {
     try {
-      const response = await fetch('http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php');
+      const response = await fetch('https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php');
       const data = await response.json();
       if (data.status === 'success') {
         setStalls(data.data);
@@ -29,7 +29,7 @@ export default function CategoryItemsScreen({ navigation, route }) {
 
   const fetchItems = async () => {
     try {
-      const response = await fetch(`http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/fetch_items_by_category.php?category=${category}`);
+      const response = await fetch(`https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/fetch_items_by_category.php?category=${category}`);
       const data = await response.json();
       if (data.status === 'success') {
         setItems(data.data);
@@ -43,6 +43,15 @@ export default function CategoryItemsScreen({ navigation, route }) {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="arrow-back" size={24} color="#1A1A1A" />
@@ -73,7 +82,7 @@ export default function CategoryItemsScreen({ navigation, route }) {
                 >
                   <Image 
                     source={{ uri: item.food_image 
-                      ? `http://10.19.95.173/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                      ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
                       : 'https://via.placeholder.com/200?text=Food' }} 
                     style={styles.foodImg} 
                   />
@@ -107,7 +116,7 @@ export default function CategoryItemsScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F8F9FB', paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 },
-  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 15, backgroundColor: '#FFF', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
+  header: { flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20, paddingVertical: 15, backgroundColor: 'transparent', borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
   backBtn: { marginRight: 15 },
   headerTitle: { fontSize: 20, fontWeight: '800', color: '#1A1A1A' },
   scrollContent: { padding: 15 },
@@ -122,5 +131,62 @@ const styles = StyleSheet.create({
   miniStatus: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 5 },
   statusText: { fontSize: 10, fontWeight: '800', textTransform: 'uppercase' },
   emptyState: { alignItems: 'center', marginTop: 100 },
-  emptyText: { marginTop: 15, fontSize: 16, color: '#AAA' }
+  emptyText: { marginTop: 15, fontSize: 16, color: '#AAA' },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
+
 });

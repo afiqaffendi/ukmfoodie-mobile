@@ -11,7 +11,7 @@ export default function CustomerOrderScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const IP_ADDRESS = '10.19.95.173';
+  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
   const [userData, setUserData] = useState(null);
 
   const fetchOrders = async () => {
@@ -21,7 +21,7 @@ export default function CustomerOrderScreen({ navigation }) {
       const user = JSON.parse(data);
       setUserData(user);
 
-      const API_URL = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/fetch_customer_orders.php?user_id=${user.id}`;
+      const API_URL = `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/fetch_customer_orders.php?user_id=${user.id}`;
       const response = await fetch(API_URL);
       const result = await response.json();
       if (result.status === 'success') {
@@ -67,6 +67,15 @@ export default function CustomerOrderScreen({ navigation }) {
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
+
       {/* HEADER */}
       <View style={styles.headerContainer}>
         <Text style={styles.headerTitle}>My Orders</Text>
@@ -138,9 +147,9 @@ export default function CustomerOrderScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: '#F3F4F6', paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 },
-  headerContainer: { paddingHorizontal: 20, paddingTop: 15, paddingBottom: 15, backgroundColor: '#FFF' },
+  headerContainer: { paddingHorizontal: 20, paddingTop: 15, paddingBottom: 15, backgroundColor: 'transparent' },
   headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#1A1A1A' },
-  tabsContainer: { flexDirection: 'row', backgroundColor: '#FFF', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#EAEBEE' },
+  tabsContainer: { flexDirection: 'row', backgroundColor: 'transparent', paddingHorizontal: 20, paddingBottom: 10, borderBottomWidth: 1, borderBottomColor: '#EAEBEE' },
   tabButton: { flex: 1, paddingVertical: 12, alignItems: 'center', borderBottomWidth: 2, borderBottomColor: 'transparent' },
   tabButtonActive: { borderBottomColor: '#FFC93C' },
   tabText: { fontSize: 16, fontWeight: '600', color: '#888' },
@@ -158,5 +167,61 @@ const styles = StyleSheet.create({
   cardFooter: { flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', paddingTop: 10 },
   viewDetailsText: { fontSize: 13, color: '#888', marginRight: 4, fontWeight: '500' },
   emptyState: { alignItems: 'center', marginTop: 60 },
-  emptyText: { marginTop: 10, color: '#888', fontSize: 16 }
+  emptyText: { marginTop: 10, color: '#888', fontSize: 16 },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
 });

@@ -11,8 +11,8 @@ export default function CheckoutScreen({ navigation, route }) {
   const { orderData } = route.params;
   
   // IP Address Hotspot/Network awak
-  const IP_ADDRESS = '10.19.95.173';
-  const API_BASE = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
+  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
+  const API_BASE = `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
 
   const [bankDetails, setBankDetails] = useState(null);
   const [image, setImage] = useState(null);
@@ -22,7 +22,7 @@ export default function CheckoutScreen({ navigation, route }) {
   const [userData, setUserData] = useState(null);
 
   const qrUrl = bankDetails?.qr_path && bankDetails.qr_path !== 'default_qr.png'
-    ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${bankDetails.qr_path}`
+    ? `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${bankDetails.qr_path}`
     : 'https://via.placeholder.com/150?text=No+QR+Code';
 
   const serviceTax = 1.00;
@@ -113,6 +113,15 @@ export default function CheckoutScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="dark" />
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
+
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Ionicons name="chevron-back" size={20} color="#1A1A1A" />
@@ -129,7 +138,7 @@ export default function CheckoutScreen({ navigation, route }) {
           {orderData.items.map((item, index) => (
             <View key={index} style={styles.orderItem}>
               <Image 
-                source={{ uri: `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
+                source={{ uri: `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
                 style={styles.itemThumb} 
               />
               <View style={styles.itemInfo}>
@@ -250,7 +259,7 @@ export default function CheckoutScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#EFF1F5', paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 15, paddingVertical: 15, backgroundColor: '#FFF' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 15, paddingVertical: 15, backgroundColor: 'transparent' },
   backBtn: { flexDirection: 'row', alignItems: 'center' },
   backText: { fontSize: 12, fontWeight: '700', marginLeft: 5 },
   headerTitle: { fontSize: 16, fontWeight: '800', color: '#1A1A1A' },
@@ -307,4 +316,61 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.9,
     height: Dimensions.get('window').height * 0.7,
   },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
+
 });

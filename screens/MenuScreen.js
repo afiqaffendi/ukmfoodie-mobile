@@ -25,11 +25,11 @@ export default function MenuScreen({ navigation, route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   // IP Address Hotspot awak
-  const IP_ADDRESS = '10.19.95.173';
-  const API_URL = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/fetch_menu.php?stall_id=${stall.id}`;
+  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
+  const API_URL = `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/fetch_menu.php?stall_id=${stall.id}`;
   
   const headerImage = stall.stall_image && stall.stall_image !== 'default_stall.jpg'
-    ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
+    ? `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
     : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
 
   useEffect(() => {
@@ -117,6 +117,15 @@ export default function MenuScreen({ navigation, route }) {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
+      {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+      <View style={styles.staticBackground}>
+        <View style={styles.staticLine1} />
+        <View style={styles.staticLine2} />
+        <View style={styles.staticLine3} />
+        <View style={styles.staticLine4} />
+        <View style={styles.staticLine5} />
+      </View>
+
       
 
       
@@ -168,7 +177,7 @@ export default function MenuScreen({ navigation, route }) {
                   })
                   .map((item) => {
                     const foodImage = item.food_image && item.food_image !== 'default_food.jpg'
-                      ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                      ? `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
                       : 'https://via.placeholder.com/200x200?text=No+Image';
 
                     const isAvailable = item.status === 'Available';
@@ -240,7 +249,7 @@ export default function MenuScreen({ navigation, route }) {
                   <View style={styles.modalImageContainer}>
                     <Image 
                       source={{ uri: selectedItem.food_image && selectedItem.food_image !== 'default_food.jpg'
-                        ? `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${selectedItem.food_image}`
+                        ? `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${selectedItem.food_image}`
                         : 'https://via.placeholder.com/400x400?text=No+Image' }} 
                       style={styles.modalImage} 
                     />
@@ -477,5 +486,62 @@ const styles = StyleSheet.create({
   doneBtn: { backgroundColor: '#FFC93C', paddingVertical: 14, borderRadius: 14, alignItems: 'center', shadowColor: '#FFC93C', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 3 },
   doneBtnText: { fontSize: 15, fontWeight: 'bold', color: '#1A1A1A' },
   emptySearch: { alignItems: 'center', marginTop: 60 },
-  emptyText: { marginTop: 12, color: '#AAA', fontSize: 16, fontWeight: '500' }
+  emptyText: { marginTop: 12, color: '#AAA', fontSize: 16, fontWeight: '500' },
+
+  // Static Abstract Background
+  staticBackground: {
+    ...StyleSheet.absoluteFillObject,
+    overflow: 'hidden',
+  },
+  staticLine1: {
+    position: 'absolute',
+    top: 100,
+    left: -150,
+    width: 600,
+    height: 40,
+    backgroundColor: '#FFC93C',
+    opacity: 0.12,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine2: {
+    position: 'absolute',
+    top: 350,
+    right: -250,
+    width: 800,
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.05,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine3: {
+    position: 'absolute',
+    bottom: 250,
+    left: -200,
+    width: 700,
+    height: 70,
+    backgroundColor: '#FFC93C',
+    opacity: 0.08,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine4: {
+    position: 'absolute',
+    bottom: 0,
+    right: -100,
+    width: 500,
+    height: 35,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.06,
+    transform: [{ rotate: '-45deg' }]
+  },
+  staticLine5: {
+    position: 'absolute',
+    top: -30,
+    right: -50,
+    width: 400,
+    height: 25,
+    backgroundColor: '#1A1A1A',
+    opacity: 0.04,
+    transform: [{ rotate: '-45deg' }]
+  }
+
 });
