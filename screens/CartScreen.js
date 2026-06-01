@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, TextInput, SafeAreaView, Platform, StatusBar as RNStatusBar, KeyboardAvoidingView } from 'react-native';
 import { useAlert } from '../components/CustomAlert';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,8 +8,6 @@ import { StatusBar } from 'expo-status-bar';
 export default function CartScreen({ navigation, route }) {
   const { showAlert } = useAlert();
   const { cartItems, stall } = route.params;
-  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
-  
   // Inisialkan state dengan items yang diterima
   const [items, setItems] = useState(cartItems);
   const [note, setNote] = useState('');
@@ -89,7 +88,7 @@ export default function CartScreen({ navigation, route }) {
             {items.map((item, index) => (
               <View key={item.id.toString()} style={[styles.cartItemRow, index !== items.length - 1 && styles.itemDivider]}>
                 <Image 
-                   source={{ uri: `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
+                   source={{ uri: `${API_BASE}/uploads/${item.food_image}` }} 
                    style={styles.itemImage} 
                 />
                 <View style={styles.itemDetails}>

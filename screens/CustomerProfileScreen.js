@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useAlert } from '../components/CustomAlert';
@@ -16,9 +17,6 @@ export default function CustomerProfileScreen({ navigation }) {
   const [updating, setUpdating] = useState(false);
   const { showAlert } = useAlert();
 
-  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
-  const API_BASE = `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
-
   useEffect(() => {
     loadUserSession();
   }, []);
@@ -26,9 +24,13 @@ export default function CustomerProfileScreen({ navigation }) {
   const loadUserSession = async () => {
     try {
       const session = await AsyncStorage.getItem('userData');
+      const guestMode = await AsyncStorage.getItem('guestMode');
       if (session) {
         const parsed = JSON.parse(session);
         fetchProfile(parsed.id);
+      } else if (guestMode === 'true') {
+        setUserData(null);
+        setLoading(false);
       } else {
         navigation.replace('LoginScreen');
       }
@@ -125,6 +127,7 @@ export default function CustomerProfileScreen({ navigation }) {
           style: "destructive", 
           onPress: async () => {
             await AsyncStorage.removeItem('userData');
+            await AsyncStorage.removeItem('guestMode');
             navigation.reset({ index: 0, routes: [{ name: 'LoginScreen' }] });
           } 
         }
@@ -137,6 +140,46 @@ export default function CustomerProfileScreen({ navigation }) {
       <View style={styles.center}>
         <ActivityIndicator size="large" color="#FFC93C" />
       </View>
+    );
+  }
+
+  if (!userData) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar style="dark" />
+        {/* STATIC ABSTRACT BACKGROUND (Diagonal Lines Pattern) */}
+        <View style={styles.staticBackground}>
+          <View style={styles.staticLine1} />
+          <View style={styles.staticLine2} />
+          <View style={styles.staticLine3} />
+          <View style={styles.staticLine4} />
+          <View style={styles.staticLine5} />
+        </View>
+
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
+            <Ionicons name="chevron-back" size={24} color="#1A1A1A" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Profile</Text>
+          <View style={{ width: 24 }} />
+        </View>
+
+        <View style={styles.guestContainer}>
+          <View style={styles.guestIconContainer}>
+            <Ionicons name="person-circle-outline" size={90} color="#FFC93C" />
+          </View>
+          <Text style={styles.guestTitle}>Guest Mode</Text>
+          <Text style={styles.guestMessage}>
+            Log in to your account to edit your profile details, set a profile picture, and customize your settings!
+          </Text>
+          <TouchableOpacity 
+            style={styles.guestLoginBtn}
+            onPress={() => navigation.reset({ index: 0, routes: [{ name: 'LoginScreen' }] })}
+          >
+            <Text style={styles.guestLoginBtnText}>Login or Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
     );
   }
 
@@ -296,5 +339,60 @@ const styles = StyleSheet.create({
     backgroundColor: '#1A1A1A',
     opacity: 0.04,
     transform: [{ rotate: '-45deg' }]
-  }
+  },
+  guestContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 30,
+    paddingBottom: 80,
+  },
+  guestIconContainer: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    backgroundColor: '#FFF8DD',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 30,
+    shadowColor: '#FFC93C',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
+    elevation: 5,
+  },
+  guestTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#1A1A1A',
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  guestMessage: {
+    fontSize: 15,
+    color: '#718096',
+    textAlign: 'center',
+    lineHeight: 22,
+    marginBottom: 35,
+    paddingHorizontal: 15,
+  },
+  guestLoginBtn: {
+    width: '85%',
+    height: 55,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 4,
+  },
+  guestLoginBtnText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
 });

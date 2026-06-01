@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image, Platform, StatusBar as RNStatusBar, Linking, Animated, Pressable, BackHandler, ImageBackground, Dimensions } from 'react-native';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Platform, StatusBar as RNStatusBar, Linking, Animated, Pressable, BackHandler, ImageBackground, Dimensions } from 'react-native';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const { width: windowWidth } = Dimensions.get('window');
@@ -28,7 +30,7 @@ export default function HomeScreen({ navigation, route }) {
   });
 
   // ⚠️ PENTING: Gantikan dengan IP Address laptop awak
-  const API_URL = 'https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php';
+  const API_URL = `${API_BASE}/get_all_stalls.php`;
 
   useEffect(() => {
     // Handle navigation params from LocationSearchScreen
@@ -65,7 +67,8 @@ export default function HomeScreen({ navigation, route }) {
 
   const checkAuth = async () => {
     const session = await AsyncStorage.getItem('userData');
-    if (!session) {
+    const guestMode = await AsyncStorage.getItem('guestMode');
+    if (!session && guestMode !== 'true') {
       navigation.reset({ index: 0, routes: [{ name: 'LoginScreen' }] });
     }
   };
@@ -86,7 +89,7 @@ export default function HomeScreen({ navigation, route }) {
   const fetchRandomItems = async () => {
     try {
       // Use the same base IP for random items
-      const response = await fetch('https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/fetch_random_items.php');
+      const response = await fetch(`${API_BASE}/fetch_random_items.php`);
       const result = await response.json();
       if (result.status === 'success') {
         setRandomItems(result.data);
@@ -225,7 +228,7 @@ export default function HomeScreen({ navigation, route }) {
             </TouchableOpacity>
           ) : (
             <View style={styles.logoBox}>
-              <Image source={require('../assets/images/logo.png')} style={styles.logoImage} resizeMode="contain" />
+              <Image source={require('../assets/images/logo.png')} style={styles.logoImage} contentFit="contain" />
             </View>
           )}
           <View style={{ flex: 1, marginRight: 10 }}>
@@ -276,7 +279,7 @@ export default function HomeScreen({ navigation, route }) {
                 >
                   {featuredStalls.map((stall, index) => {
                     const imagePath = stall.stall_image && stall.stall_image !== 'default_stall.jpg'
-                      ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
+                      ? `${API_BASE}/uploads/${stall.stall_image}`
                       : 'https://via.placeholder.com/600x400?text=UKMFoodie';
 
                     return (
@@ -292,7 +295,8 @@ export default function HomeScreen({ navigation, route }) {
                           }
                         }}
                       >
-                        <ImageBackground source={{ uri: imagePath }} style={styles.featuredImg}>
+                        <View style={styles.featuredImg}>
+                          <Image source={{ uri: imagePath }} style={StyleSheet.absoluteFillObject} contentFit="cover" transition={200} />
                           {stall.latitude && stall.longitude && (
                             <TouchableOpacity
                               style={styles.carouselGoBtn}
@@ -321,7 +325,7 @@ export default function HomeScreen({ navigation, route }) {
                               </View>
                             </View>
                           </LinearGradient>
-                        </ImageBackground>
+                        </View>
                       </TouchableOpacity>
                     );
                   })}
@@ -367,7 +371,7 @@ export default function HomeScreen({ navigation, route }) {
                 >
                   {[...randomItems, ...randomItems, ...randomItems].map((item, index) => {
                     const foodImg = item.food_image
-                      ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                      ? `${API_BASE}/uploads/${item.food_image}`
                       : 'https://via.placeholder.com/200?text=Food';
 
                     const stallObj = stalls.find(s => s.id == item.stall_id);
@@ -387,7 +391,7 @@ export default function HomeScreen({ navigation, route }) {
                           }
                         }}
                       >
-                        <Image source={{ uri: foodImg }} style={styles.foodImg} />
+                        <Image source={{ uri: foodImg }} style={styles.foodImg} transition={200} cachePolicy="memory-disk" />
                         <View style={styles.foodCardContent}>
                           <Text style={styles.foodName} numberOfLines={1}>{item.item_name}</Text>
                           <Text style={styles.foodPrice}>RM {parseFloat(item.price).toFixed(2)}</Text>
@@ -488,10 +492,12 @@ export default function HomeScreen({ navigation, route }) {
                     <Image
                       source={{
                         uri: stall.stall_image && stall.stall_image !== 'default_stall.jpg'
-                          ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
+                          ? `${API_BASE}/uploads/${stall.stall_image}`
                           : 'https://via.placeholder.com/150?text=Stall'
                       }}
                       style={styles.vendorImg}
+                      transition={150}
+                      cachePolicy="memory-disk"
                     />
                     <View style={styles.vendorInfo}>
                       <Text style={styles.vendorName} numberOfLines={1}>{stall.stall_name}</Text>
@@ -537,7 +543,7 @@ export default function HomeScreen({ navigation, route }) {
             {filteredStalls.map((item, index) => {
               const isOpen = item.status === 'Buka';
               const imagePath = item.stall_image && item.stall_image !== 'default_stall.jpg'
-                ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.stall_image}`
+                ? `${API_BASE}/uploads/${item.stall_image}`
                 : 'https://via.placeholder.com/600x400?text=No+Image';
 
               return (
@@ -553,7 +559,7 @@ export default function HomeScreen({ navigation, route }) {
                     }
                   }}
                 >
-                  <Image source={{ uri: imagePath }} style={styles.cardImage} />
+                  <Image source={{ uri: imagePath }} style={styles.cardImage} transition={150} cachePolicy="memory-disk" />
                   <View style={styles.cardContent}>
                     <View style={styles.cardHeaderRow}>
                       <Text style={styles.stallName}>{item.stall_name}</Text>

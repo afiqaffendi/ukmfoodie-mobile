@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Image, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useToast } from '../components/Toast';
@@ -13,11 +14,11 @@ export default function CategoryItemsScreen({ navigation, route }) {
   useEffect(() => {
     fetchStalls();
     fetchItems();
-  }, []);
+  }, [category]);
 
   const fetchStalls = async () => {
     try {
-      const response = await fetch('https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php');
+      const response = await fetch(`${API_BASE}/get_all_stalls.php`);
       const data = await response.json();
       if (data.status === 'success') {
         setStalls(data.data);
@@ -29,7 +30,7 @@ export default function CategoryItemsScreen({ navigation, route }) {
 
   const fetchItems = async () => {
     try {
-      const response = await fetch(`https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/fetch_items_by_category.php?category=${category}`);
+      const response = await fetch(`${API_BASE}/fetch_items_by_category.php?category=${category}`);
       const data = await response.json();
       if (data.status === 'success') {
         setItems(data.data);
@@ -82,7 +83,7 @@ export default function CategoryItemsScreen({ navigation, route }) {
                 >
                   <Image 
                     source={{ uri: item.food_image 
-                      ? `https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                      ? `${API_BASE}/uploads/${item.food_image}`
                       : 'https://via.placeholder.com/200?text=Food' }} 
                     style={styles.foodImg} 
                   />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, ActivityIndicator, Animated, Dimensions, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useToast } from '../components/Toast';
@@ -47,7 +48,7 @@ export default function LocationSearchScreen({ navigation }) {
 
   const fetchStalls = async () => {
     try {
-      const response = await fetch('https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/get_all_stalls.php');
+      const response = await fetch(`${API_BASE}/get_all_stalls.php`);
       const data = await response.json();
       if (data.status === 'success') {
         setStalls(data.data);

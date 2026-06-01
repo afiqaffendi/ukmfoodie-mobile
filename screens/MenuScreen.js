@@ -1,8 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ImageBackground, Image, SafeAreaView, ActivityIndicator, Platform, StatusBar as RNStatusBar, TextInput, Dimensions, Modal, Animated, Pressable, KeyboardAvoidingView } from 'react-native';
 const { width: windowWidth } = Dimensions.get('window');
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAlert } from '../components/CustomAlert';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const HEADER_IMAGE_HEIGHT = 300;
 const STATUS_BAR_HEIGHT = Platform.OS === 'android' ? RNStatusBar.currentHeight : 20;
@@ -13,6 +16,7 @@ const CARD_WIDTH = (windowWidth - (GRID_PADDING * 2) - CARD_MARGIN) / 2;
 
 export default function MenuScreen({ navigation, route }) {
   const { stall } = route.params; 
+  const { showAlert } = useAlert();
 
   const [menuList, setMenuList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,18 +29,19 @@ export default function MenuScreen({ navigation, route }) {
   const scrollY = useRef(new Animated.Value(0)).current;
 
   // IP Address Hotspot awak
-  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
-  const API_URL = `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/fetch_menu.php?stall_id=${stall.id}`;
+  const API_URL = `${API_BASE}/fetch_menu.php?stall_id=${stall.id}`;
   
   const headerImage = stall.stall_image && stall.stall_image !== 'default_stall.jpg'
-    ? `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${stall.stall_image}`
+    ? `${API_BASE}/uploads/${stall.stall_image}`
     : 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80';
 
   useEffect(() => {
     fetchMenu();
-  }, []);
+  }, [stall.id]);
 
   const fetchMenu = async () => {
+    setLoading(true);
+    setTotalPrice(0.00);
     try {
       const response = await fetch(API_URL);
       const result = await response.json();
@@ -90,7 +95,26 @@ export default function MenuScreen({ navigation, route }) {
     }
   };
 
-  const handleOpenItem = (item) => {
+  const handleOpenItem = async (item) => {
+    const guestMode = await AsyncStorage.getItem('guestMode');
+    if (guestMode === 'true') {
+      showAlert(
+        'Login Required',
+        'Please login or register to add food to your cart and place orders!',
+        'warning',
+        [
+          { text: 'Cancel', style: 'cancel', onPress: null },
+          { 
+            text: 'Login Now', 
+            onPress: () => {
+              navigation.reset({ index: 0, routes: [{ name: 'LoginScreen' }] });
+            } 
+          }
+        ]
+      );
+      return;
+    }
+
     if (item.quantity === 0) {
       const updatedMenu = menuList.map(i => {
         if (i.id === item.id) {
@@ -195,7 +219,7 @@ export default function MenuScreen({ navigation, route }) {
                   })
                   .map((item) => {
                     const foodImage = item.food_image && item.food_image !== 'default_food.jpg'
-                      ? `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}`
+                      ? `${API_BASE}/uploads/${item.food_image}`
                       : 'https://via.placeholder.com/200x200?text=No+Image';
 
                     const isAvailable = item.status === 'Available';
@@ -267,7 +291,7 @@ export default function MenuScreen({ navigation, route }) {
                   <View style={styles.modalImageContainer}>
                     <Image 
                       source={{ uri: selectedItem.food_image && selectedItem.food_image !== 'default_food.jpg'
-                        ? `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${selectedItem.food_image}`
+                        ? `${API_BASE}/uploads/${selectedItem.food_image}`
                         : 'https://via.placeholder.com/400x400?text=No+Image' }} 
                       style={styles.modalImage} 
                     />

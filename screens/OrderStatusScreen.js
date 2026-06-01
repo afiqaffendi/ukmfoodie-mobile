@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import { View, Text, StyleSheet, SafeAreaView, TouchableOpacity, ActivityIndicator, Image, ScrollView, Platform, StatusBar as RNStatusBar, TextInput, BackHandler, Modal, Linking } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -10,9 +11,6 @@ import LogoImage from '../assets/images/logo.png';
 export default function OrderStatusScreen({ navigation, route }) {
   const { order_id } = route.params;
   const { showToast } = useToast();
-  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
-  const API_BASE = `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
-
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeLeftStr, setTimeLeftStr] = useState('');

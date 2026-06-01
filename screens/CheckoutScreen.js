@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView, SafeAreaView, ActivityIndicator, Platform, StatusBar as RNStatusBar, Modal, Dimensions } from 'react-native';
 import { useAlert } from '../components/CustomAlert';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -11,9 +12,6 @@ export default function CheckoutScreen({ navigation, route }) {
   const { orderData } = route.params;
   
   // IP Address Hotspot/Network awak
-  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
-  const API_BASE = `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
-
   const [bankDetails, setBankDetails] = useState(null);
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -22,7 +20,7 @@ export default function CheckoutScreen({ navigation, route }) {
   const [userData, setUserData] = useState(null);
 
   const qrUrl = bankDetails?.qr_path && bankDetails.qr_path !== 'default_qr.png'
-    ? `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${bankDetails.qr_path}`
+    ? `${API_BASE}/uploads/${bankDetails.qr_path}`
     : 'https://via.placeholder.com/150?text=No+QR+Code';
 
   const serviceTax = 1.00;
@@ -138,7 +136,7 @@ export default function CheckoutScreen({ navigation, route }) {
           {orderData.items.map((item, index) => (
             <View key={index} style={styles.orderItem}>
               <Image 
-                source={{ uri: `https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/uploads/${item.food_image}` }} 
+                source={{ uri: `${API_BASE}/uploads/${item.food_image}` }} 
                 style={styles.itemThumb} 
               />
               <View style={styles.itemInfo}>

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import {
   View, Text, StyleSheet, TextInput, TouchableOpacity,
   FlatList, Platform, ActivityIndicator,
@@ -8,13 +9,11 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function AIChatScreen({ navigation }) {
   const [messages, setMessages] = useState([
-    { id: '1', text: 'Hai! Saya Pembantu AI UKMFoodie. Ada apa yang saya boleh bantu hari ini? 🍲', isUser: false }
+    { id: '1', text: 'Hi! I am your UKMFoodie AI Assistant. How can I help you find delicious food today? 🍲', isUser: false }
   ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const flatListRef = useRef();
-
-  const IP_ADDRESS = 'campsite-feisty-nephew.ngrok-free.dev';
 
   const sendMessage = async () => {
     if (inputText.trim() === '' || isLoading) return;
@@ -27,7 +26,7 @@ export default function AIChatScreen({ navigation }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(`https://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api/ai_chat.php`, {
+      const response = await fetch(`${API_BASE}/ai_chat.php`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: text })

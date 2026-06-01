@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { IP_ADDRESS, API_BASE } from '../constants/config';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, SafeAreaView, StatusBar as RNStatusBar, Image, Animated, Easing } from 'react-native';
 import { useAlert } from '../components/CustomAlert';
 import { StatusBar } from 'expo-status-bar';
@@ -69,7 +70,7 @@ export default function RegisterScreen({ navigation }) {
 
     try {
       // Pastikan IP ini tepat dengan IP Hotspot awak
-      const API_URL = 'https://campsite-feisty-nephew.ngrok-free.dev/ukmfoodie_workspace/ukmfoodie_api/register.php';
+      const API_URL = `${API_BASE}/register.php`;
 
       const response = await fetch(API_URL, {
         method: 'POST',
