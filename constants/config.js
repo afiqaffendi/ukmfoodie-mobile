@@ -11,7 +11,7 @@
 //    Buka CMD, taip 'ipconfig', salin IPv4 Address komputer anda (contoh: '192.168.1.15').
 //    Dan tampal IP tersebut di bawah.
 // ==========================================
-export const IP_ADDRESS = '10.96.147.173'; 
+export const IP_ADDRESS = '167.172.94.242';
 
 // Protokol ditukar ke 'http' kerana local XAMPP Apache menggunakan http secara default
-export const API_BASE = `http://${IP_ADDRESS}/ukmfoodie_workspace/ukmfoodie_api`;
+export const API_BASE = `https://ukmfoodie.systems/ukmfoodie_api`;

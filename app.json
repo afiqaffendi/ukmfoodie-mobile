@@ -22,7 +22,7 @@
       "predictiveBackGestureEnabled": false
     },
     "web": {
-      "output": "static",
+      "output": "single",
       "favicon": "./assets/images/logo.png"
     },
     "plugins": [
@@ -41,6 +41,18 @@
     ],
     "experiments": {
       "reactCompiler": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "3fb32462-f329-4fec-b47d-95af34a9d1a8"
+      }
+    },
+    "owner": "afiqaffendi",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/3fb32462-f329-4fec-b47d-95af34a9d1a8"
     }
   }
 }
